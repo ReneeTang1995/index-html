@@ -719,7 +719,39 @@ function clearAll(){
   document.getElementById('school-drop').style.display='none';
 }
 // ── 行事曆 ──
-let calEvents=[];
+let calEvents=[
+  {id:'ce001',semester:'115-2',date:'2026-05-18',dateStr:'5月18日',day:'週一',time:'7:35-8:10',school:'大業國民中學',type:'入班宣導',classNum:'18班',people:'590',note:'派9人',teachers:[]},
+  {id:'ce002',semester:'115-2',date:'2026-05-18',dateStr:'5月18日',day:'週一',time:'14:00-16:00',school:'大業國民中學',type:'博覽會',classNum:'18班',people:'590',note:'',teachers:[]},
+  {id:'ce003',semester:'115-2',date:'2026-05-18',dateStr:'5月18日',day:'週一',time:'下午',school:'大墩國民中學',type:'來校參訪',classNum:'10班',people:'230',note:'',teachers:[]},
+  {id:'ce004',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'13:20-15:00',school:'中平國民中學',type:'博覽會',classNum:'-',people:'229',note:'',teachers:[]},
+  {id:'ce005',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'09:10-11:50',school:'光明國民中學',type:'博覽會',classNum:'14班',people:'310',note:'',teachers:[]},
+  {id:'ce006',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'11:00-12:00',school:'后里國民中學',type:'入班宣導',classNum:'6',people:'-',note:'需派3位',teachers:[]},
+  {id:'ce007',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'上午',school:'安和國民中學',type:'校園參訪',classNum:'11班',people:'225',note:'6車',teachers:[]},
+  {id:'ce008',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'13:00-15:30',school:'新社高級中學',type:'博覽會',classNum:'5班',people:'117',note:'',teachers:[]},
+  {id:'ce009',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'09:00-11:00',school:'漢口國民中學',type:'博覽會',classNum:'10班',people:'254',note:'',teachers:[]},
+  {id:'ce010',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'09:20-10:05',school:'豐南國民中學',type:'入班宣導',classNum:'16班',people:'385',note:'派8人',teachers:[]},
+  {id:'ce011',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'08:25-11:00',school:'光榮國民中學',type:'博覽會',classNum:'-',people:'400',note:'',teachers:[]},
+  {id:'ce012',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'13:30-16:10',school:'向上國民中學',type:'博覽會',classNum:'14班',people:'405',note:'',teachers:[]},
+  {id:'ce013',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'09:00-12:00',school:'西苑高中',type:'博覽會',classNum:'14班',people:'373',note:'',teachers:[]},
+  {id:'ce014',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'13:10-14:50',school:'崇倫國民中學',type:'博覽會',classNum:'10班',people:'256',note:'',teachers:[]},
+  {id:'ce015',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'上午',school:'潭子國民中學',type:'來校參訪',classNum:'-',people:'-',note:'1輛車',teachers:[]},
+  {id:'ce016',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'15:10-15:55',school:'豐陽國民中學',type:'設計講座',classNum:'7班',people:'161',note:'佩佩老師',teachers:[]},
+  {id:'ce017',semester:'115-2',date:'2026-05-21',dateStr:'5月21日',day:'週四',time:'13:15-14:00',school:'光德國民中學',type:'入班宣導',classNum:'13班',people:'373',note:'派7人',teachers:[]},
+  {id:'ce018',semester:'115-2',date:'2026-05-21',dateStr:'5月21日',day:'週四',time:'下午',school:'神岡國民中學',type:'來校參訪',classNum:'7班',people:'181',note:'',teachers:[]},
+  {id:'ce019',semester:'115-2',date:'2026-05-21',dateStr:'5月21日',day:'週四',time:'15:10-15:55',school:'豐陽國民中學',type:'入班宣導',classNum:'7班',people:'161',note:'派4人',teachers:[]},
+  {id:'ce020',semester:'115-2',date:'2026-05-22',dateStr:'5月22日',day:'週五',time:'09:15-10:55',school:'立人國民中學',type:'博覽會',classNum:'7班',people:'190',note:'',teachers:[]},
+  {id:'ce021',semester:'115-2',date:'2026-05-25',dateStr:'5月25日',day:'週一',time:'11:00-12:00',school:'大雅國民中學',type:'入班宣導',classNum:'13班',people:'390',note:'派5人',teachers:[]},
+  {id:'ce022',semester:'115-2',date:'2026-05-25',dateStr:'5月25日',day:'週一',time:'15:00-15:50',school:'烏日國民中學',type:'入班宣導',classNum:'5班',people:'105',note:'派3人',teachers:[]},
+  {id:'ce023',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',time:'14:00-15:00',school:'大里高中',type:'博覽會',classNum:'6班',people:'140',note:'',teachers:[]},
+  {id:'ce024',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',time:'14:20-16:00',school:'沙鹿國民中學',type:'博覽會',classNum:'18班',people:'502',note:'',teachers:[]},
+  {id:'ce025',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',time:'上午',school:'東山高中',type:'來校參訪',classNum:'6班',people:'190',note:'',teachers:[]},
+  {id:'ce026',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',time:'14:00-16:00',school:'新光國民中學',type:'體驗活動',classNum:'-',people:'-',note:'美工科・文麗老師',teachers:['黃文麗']},
+  {id:'ce027',semester:'115-2',date:'2026-05-27',dateStr:'5月27日',day:'週三',time:'13:15-15:15',school:'崇德國民中學',type:'博覽會',classNum:'-',people:'434',note:'',teachers:[]},
+  {id:'ce028',semester:'115-2',date:'2026-05-27',dateStr:'5月27日',day:'週三',time:'10:10-10:55',school:'豐原國民中學',type:'入班宣導',classNum:'12班',people:'290',note:'派6人',teachers:[]},
+  {id:'ce029',semester:'115-2',date:'2026-05-29',dateStr:'5月29日',day:'週五',time:'上午',school:'北新國民中學',type:'來校參訪',classNum:'13班',people:'567',note:'',teachers:[]},
+  {id:'ce030',semester:'115-2',date:'2026-06-02',dateStr:'6月2日',day:'週二',time:'14:10-15:55',school:'雙十國民中學',type:'博覽會',classNum:'-',people:'-',note:'',teachers:[]},
+  {id:'ce031',semester:'115-2',date:'2026-06-04',dateStr:'6月4日',day:'週四',time:'13:05-15:45',school:'北新國民中學',type:'博覽會',classNum:'-',people:'-',note:'',teachers:[]},
+];
 let editCalId=null;
 const WEEK=['日','一','二','三','四','五','六'];
 
@@ -936,7 +968,7 @@ function doTeacherImport(){
 }
 
 // ── 學期管理 ──
-let semesters=['114學年第1學期','114學年第2學期'];
+let semesters=['114學年第1學期','114學年第2學期','115-2'];
 let activeSem='all';
 
 function renderSemBtns(){
