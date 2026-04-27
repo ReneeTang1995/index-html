@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大明高中 招生宣導系統</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Microsoft JhengHei','Noto Sans TC',sans-serif;color:#1a1a1a;background:#f8f8f6;font-size:15px}
+.wrap{max-width:900px;margin:0 auto;padding:1rem}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding:1rem 1.25rem;background:#fff;border-radius:12px;border:1px solid #e5e5e0}
+.header-icon{width:40px;height:40px;border-radius:50%;background:#f1efe8;display:flex;align-items:center;justify-content:center;font-size:18px}
+.tabs{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:2px solid #e5e5e0}
+.tab{padding:10px 20px;font-size:14px;cursor:pointer;border:none;background:none;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;font-weight:500}
+.tab:hover{color:#1a1a1a}
+.tab.active{color:#1a1a1a;border-bottom:3px solid #1a1a1a}
+.page{display:none}.page.active{display:block}
+h2{font-size:16px;font-weight:600;margin-bottom:1rem}
+.card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+label{font-size:13px;color:#666;display:block;margin-bottom:5px}
+input[type=text],input[type=date],input[type=time],textarea{width:100%;padding:8px 10px;border:1px solid #d5d3ca;border-radius:8px;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px}
+input:focus,textarea:focus{border-color:#888}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{cursor:pointer;font-size:13px;font-family:inherit}
+.btn-primary{background:#1a1a1a;color:#fff;border:none;padding:9px 20px;border-radius:8px;font-size:14px;font-family:inherit}
+.btn-primary:hover{background:#333}
+.btn-outline{background:#fff;border:1px solid #d5d3ca;padding:8px 16px;border-radius:8px;color:#1a1a1a}
+.btn-outline:hover{background:#f8f8f6}
+.btn-sm{padding:5px 11px;font-size:12px;border-radius:7px;border:1px solid #d5d3ca;background:#fff;color:#1a1a1a}
+.btn-sm:hover{background:#f8f8f6}
+.btn-danger{background:#fff;border:1px solid #f09595;padding:5px 11px;border-radius:7px;font-size:12px;color:#a32d2d}
+.btn-danger:hover{background:#fcebeb}
+.sg{display:grid;grid-template-columns:75px repeat(6,1fr);gap:2px;font-size:11px}
+.sg-h{background:#f1efe8;padding:5px 3px;text-align:center;font-weight:600;border-radius:4px;font-size:11px}
+.sg-t{background:#f1efe8;padding:4px 3px;text-align:center;border-radius:4px;font-size:10px;color:#666;line-height:1.4}
+.sg-c{border:1px solid #e5e5e0;border-radius:4px;min-height:50px;display:flex;align-items:center;justify-content:center;padding:2px}
+.sg-c.busy{background:#eaf3de;border-color:#97c459}
+.sg-c.empty{background:#fff}
+.ct{font-size:9px;text-align:center;color:#27500a;line-height:1.3}
+.cc{font-size:8px;color:#3b6d11}
+.ti{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid #e5e5e0;border-radius:10px;margin-bottom:8px;background:#fff}
+.ri{padding:10px 14px;border:1px solid #e5e5e0;border-radius:10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;background:#fff}
+.ri.available{border-color:#97c459;background:#eaf3de}
+.ri.selected{border-color:#378add;background:#e6f1fb}
+.ri.unavailable{opacity:0.55}
+.sb{padding:7px 12px;border:1px solid #d5d3ca;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;font-family:inherit}
+.sb:hover{background:#f8f8f6}
+.sb.active{border-color:#378add;background:#e6f1fb;color:#185fa5;font-weight:500}
+.overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:14px;padding:1.5rem;width:680px;max-width:95vw;max-height:85vh;overflow-y:auto;margin:auto}
+.es{text-align:center;padding:2.5rem;color:#888;font-size:14px}
+.tag{display:inline-block;font-size:12px;padding:3px 10px;border-radius:20px;margin:2px;background:#f1efe8;color:#555}
+.sl{font-size:13px;font-weight:600;margin:14px 0 8px}
+.info-bar{background:#e6f1fb;border:1px solid #b5d4f4;border-radius:8px;padding:10px 14px;font-size:13px;color:#185fa5;margin-bottom:1rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="header">
+  <div class="header-icon">🏫</div>
+  <div>
+    <p style="font-weight:600;font-size:16px">大明高中 招生宣導系統</p>
+    <p style="font-size:12px;color:#888">課表管理 · 空堂查詢 · 出差單 · 行事曆</p>
+  </div>
+  <div style="margin-left:auto;font-size:12px;color:#888">共 <span id="tc2">33</span> 位老師</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="sw('teachers',this)">📋 老師課表</button>
+  <button class="tab" onclick="sw('query',this)">🔍 空堂查詢</button>
+  <button class="tab" onclick="sw('export',this)">📄 出差單</button>
+  <button class="tab" onclick="sw('calendar',this)">📅 行事曆</button>
+</div>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page-teachers">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h2 style="margin:0">老師課表（<span id="tc">33</span> 位）</h2>
+    <div style="display:flex;gap:8px">
+      <button class="btn-outline" onclick="openTeacherImport()" style="font-size:13px">📥 批次匯入</button>
+      <button class="btn-primary" onclick="openAdd()">＋ 新增老師</button>
+    </div>
+  </div>
+  <div style="position:relative;margin-bottom:1rem">
+    <input type="text" id="search-teacher" placeholder="🔍 搜尋老師姓名或科目…" oninput="rTL()" style="margin-bottom:0;padding-left:14px">
+  </div>
+  <div id="tlist"></div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page-query">
+  <h2>空堂查詢</h2>
+  <div class="card">
+    <div style="margin-bottom:14px">
+      <label>宣導日期</label>
+      <input type="date" id="qdate" style="margin-bottom:8px" onchange="syncDayFromDate()">
+      <div id="date-display" style="font-size:13px;color:#185fa5;font-weight:600;padding:6px 10px;background:#e6f1fb;border-radius:7px;display:none"></div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label>星期（由日期自動帶入，亦可手動修改）</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+        <button class="sb active" id="day-1" onclick="sd(1)">週一</button>
+        <button class="sb" id="day-2" onclick="sd(2)">週二</button>
+        <button class="sb" id="day-3" onclick="sd(3)">週三</button>
+        <button class="sb" id="day-4" onclick="sd(4)">週四</button>
+        <button class="sb" id="day-5" onclick="sd(5)">週五</button>
+        <button class="sb" id="day-6" onclick="sd(6)">週六</button>
+      </div>
+    </div>
+    <label>勾選宣導節次（可複選）</label>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;margin-bottom:14px" id="period-checks"></div>
+    <div style="font-size:12px;color:#888;margin-bottom:12px;padding:8px 10px;background:#fffbea;border-radius:7px;border:1px solid #ffe58a">
+      💡 上課中若為<strong>高三課程</strong>，視為可調課（顯示橘色）
+    </div>
+    <button class="btn-primary" onclick="rq()" style="width:100%;padding:10px">查詢空堂老師</button>
+  </div>
+  <div id="qr"></div>
+  <div id="selbox" style="display:none">
+    <div class="card" style="border-color:#378add;border-width:2px">
+      <p style="font-size:13px;font-weight:600;color:#185fa5;margin-bottom:8px">✓ 已選老師</p>
+      <div id="seltags"></div>
+      <button class="btn-primary" onclick="goExp()" style="margin-top:12px">前往填寫出差單 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="page-export">
+  <h2>宣導預訂行程表</h2>
+  <div class="card">
+    <div style="margin-bottom:10px"><label>日期（民國年）</label><input type="date" id="fd"></div>
+    <div style="margin-bottom:10px;position:relative">
+      <label>宣導學校</label>
+      <input type="text" id="fs" placeholder="輸入學校名稱關鍵字…" autocomplete="off" oninput="schoolSearch()" onblur="setTimeout(hideSchoolDrop,200)" style="margin-bottom:0">
+      <div id="school-drop" style="display:none;position:absolute;left:0;right:0;top:100%;background:#fff;border:1px solid #d5d3ca;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:200;max-height:220px;overflow-y:auto"></div>
+    </div>
+    <div style="margin-bottom:10px"><label>地址</label><input type="text" id="fa" placeholder="選擇學校後自動填入"></div>
+    <div style="margin-bottom:10px"><label>宣導性質</label><input type="text" id="ft" placeholder="例：招生博覽會"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+      <div><label>到達時間</label><input type="text" id="fav" placeholder="例：13:30" style="margin-bottom:0"></div>
+      <div><label>使用時間（開始）</label><input type="text" id="fus" placeholder="例：14:00" style="margin-bottom:0"></div>
+      <div><label>使用時間（結束）</label><input type="text" id="fue" placeholder="例：16:20" style="margin-bottom:0"></div>
+    </div>
+    <div style="margin-bottom:10px"><label>宣導教師</label><input type="text" id="fte" placeholder="從查詢頁選取後自動填入"></div>
+    <div style="margin-bottom:10px"><label>實施方式</label><textarea id="fm" rows="3" style="resize:vertical">文宣內容：各校沿革、特色、辦學理念、師資陣容、地理環境、硬體設備、入學條件、畢業生就業或升學狀況...等。</textarea></div>
+    <div style="margin-bottom:10px"><label>交通</label><input type="text" id="ftr" value="老師開車前往（油料補助）"></div>
+    <div style="margin-bottom:0"><label>補充事項</label><textarea id="fn" rows="2" style="resize:vertical;margin-bottom:0">如有困難，請立即知會招生處，以便另行安排</textarea></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:stretch;margin-bottom:80px">
+    <button class="btn-primary" onclick="printExp()" style="padding:12px;font-size:15px">🖨️ 列印出差單（A4）</button>
+    <button onclick="clearAll()" style="padding:12px 18px;font-size:14px;background:#fff;border:1px solid #f09595;border-radius:8px;color:#a32d2d;cursor:pointer;font-family:inherit;white-space:nowrap" onmouseover="this.style.background='#fcebeb'" onmouseout="this.style.background='#fff'">🗑️ 清除全部</button>
+  </div>
+</div>
+
+<!-- 固定列印按鈕 -->
+<div id="float-print" style="display:none;position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+  <button onclick="printExp()" style="background:#1a1a1a;color:#fff;border:none;padding:12px 20px;border-radius:50px;font-size:14px;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.2)">🖨️ 列印出差單</button>
+  <button onclick="clearAll()" style="background:#fff;border:1px solid #f09595;padding:10px 16px;border-radius:50px;font-size:13px;font-family:inherit;cursor:pointer;color:#a32d2d;box-shadow:0 2px 8px rgba(0,0,0,0.1)">🗑️ 清除全部</button>
+</div>
+
+<!-- PAGE 4: 行事曆 -->
+<div class="page" id="page-calendar">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h2 style="margin:0">宣導行事曆</h2>
+    <div style="display:flex;gap:8px">
+      <button class="btn-outline" onclick="openImport()" style="font-size:13px">📥 貼上匯入</button>
+      <button class="btn-primary" onclick="openCalAdd()">＋ 新增活動</button>
+    </div>
+  </div>
+  <!-- 學期篩選列 -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:1rem">
+    <span style="font-size:13px;color:#666;white-space:nowrap">篩選學期：</span>
+    <button class="sb active" id="sem-all" onclick="filterSem('all')">全部</button>
+    <div id="sem-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <button onclick="openSemManager()" style="padding:5px 10px;border:1px dashed #d5d3ca;border-radius:7px;background:none;font-size:12px;color:#888;cursor:pointer">⚙️ 管理學期</button>
+  </div>
+  <!-- 批次操作列（勾選後顯示） -->
+  <div id="batch-bar" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:#e6f1fb;border:1px solid #b5d4f4;border-radius:10px;margin-bottom:1rem;flex-wrap:wrap">
+    <span id="batch-count" style="font-size:13px;font-weight:600;color:#185fa5"></span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto">
+      <button onclick="batchChangeSem()" style="padding:6px 12px;background:#fff;border:1px solid #378add;border-radius:7px;font-size:12px;color:#185fa5;cursor:pointer;font-family:inherit">🔀 變更學期</button>
+      <button onclick="batchDelete()" style="padding:6px 12px;background:#fff;border:1px solid #f09595;border-radius:7px;font-size:12px;color:#a32d2d;cursor:pointer;font-family:inherit">🗑️ 批次刪除</button>
+      <button onclick="clearSelection()" style="padding:6px 12px;background:#fff;border:1px solid #d5d3ca;border-radius:7px;font-size:12px;color:#666;cursor:pointer;font-family:inherit">✕ 取消選取</button>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table id="cal-table" style="width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e5e0">
+      <thead>
+        <tr style="background:#f1efe8">
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;width:36px">
+            <input type="checkbox" id="check-all" onchange="toggleAllCal(this.checked)" style="width:15px;height:15px;cursor:pointer">
+          </th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">學期</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">日期</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">星期</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">時間</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">學校</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">活動類型</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">班級數</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">人數</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">備註</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">指派老師</th>
+          <th style="padding:10px 8px;border:1px solid #e5e5e0;white-space:nowrap">操作</th>
+        </tr>
+      </thead>
+      <tbody id="cal-body">
+        <tr><td colspan="12" style="text-align:center;padding:2rem;color:#888">尚無活動，點右上角新增或使用「貼上匯入」</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- 批次變更學期 Modal -->
+<div class="overlay" id="mbatch">
+<div class="modal" style="width:400px">
+  <p style="font-size:16px;font-weight:600;margin-bottom:1rem">🔀 變更學期</p>
+  <p style="font-size:13px;color:#666;margin-bottom:12px" id="batch-sem-desc"></p>
+  <label style="font-size:13px;color:#666;display:block;margin-bottom:6px">將選取的活動移至：</label>
+  <select id="batch-sem-select" style="width:100%;padding:9px 10px;border:1px solid #d5d3ca;border-radius:8px;font-size:14px;font-family:inherit;outline:none;margin-bottom:0;background:#fff"></select>
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem">
+    <button class="btn-outline" onclick="document.getElementById('mbatch').classList.remove('show')">取消</button>
+    <button class="btn-primary" onclick="doBatchChangeSem()">確認變更</button>
+  </div>
+</div>
+</div>
+
+<!-- 管理學期 Modal -->
+<div class="overlay" id="msem">
+<div class="modal" style="width:460px">
+  <p style="font-size:16px;font-weight:600;margin-bottom:1rem">⚙️ 管理學期</p>
+  <div style="margin-bottom:12px">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" id="sem-new-input" placeholder="例：114學年第2學期" style="margin-bottom:0;flex:1">
+      <button class="btn-primary" onclick="addSem()" style="white-space:nowrap">新增</button>
+    </div>
+    <div id="sem-list" style="display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto"></div>
+  </div>
+  <div style="text-align:right">
+    <button class="btn-outline" onclick="document.getElementById('msem').classList.remove('show')">關閉</button>
+  </div>
+</div>
+</div>
+
+<!-- 匯入 Modal -->
+<div class="overlay" id="mi">
+<div class="modal" style="width:640px">
+  <p style="font-size:16px;font-weight:600;margin-bottom:6px">📥 貼上匯入</p>
+  <p style="font-size:12px;color:#888;margin-bottom:10px">從 Excel 或 Google 試算表複製資料後直接貼到下方，欄位順序：<strong>日期、星期、時間、學校、活動類型、班級數、人數、備註、指派老師</strong></p>
+  <div style="background:#e6f1fb;border:1px solid #b5d4f4;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+    <span style="font-size:13px;color:#185fa5">📄 不知道格式？先下載範本填寫</span>
+    <button onclick="downloadTemplate()" style="background:#185fa5;color:#fff;border:none;padding:6px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit">⬇️ 下載 Excel 範本</button>
+  </div>
+  <textarea id="import-text" rows="10" style="width:100%;padding:10px;border:1px solid #d5d3ca;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;margin-bottom:10px" placeholder="在此貼上從試算表複製的資料（不含標題列）..."></textarea>
+  <div id="import-preview" style="display:none;margin-bottom:12px">
+    <p style="font-size:13px;font-weight:600;color:#3b6d11;margin-bottom:6px" id="import-count"></p>
+    <div style="max-height:180px;overflow-y:auto;border:1px solid #d5d3ca;border-radius:8px;font-size:12px" id="import-preview-table"></div>
+  </div>
+  <div style="display:flex;gap:8px;justify-content:space-between">
+    <button onclick="previewImport()" class="btn-outline">預覽解析結果</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn-outline" onclick="document.getElementById('mi').classList.remove('show');document.getElementById('import-text').value='';document.getElementById('import-preview').style.display='none'">取消</button>
+      <button class="btn-primary" onclick="doImport()">確認匯入</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 查看課表 Modal -->
+<div class="overlay" id="mv">
+<div class="modal">
+  <p style="font-size:16px;font-weight:600;margin-bottom:1rem" id="vt"></p>
+  <div class="sg" id="vg"></div>
+  <div style="text-align:right;margin-top:1.25rem"><button class="btn-outline" onclick="document.getElementById('mv').classList.remove('show')">關閉</button></div>
+</div>
+</div>
+
+<!-- 老師課表匯入 Modal -->
+<div class="overlay" id="mti">
+<div class="modal" style="width:660px">
+  <p style="font-size:16px;font-weight:600;margin-bottom:6px">📥 批次匯入老師課表</p>
+  <p style="font-size:12px;color:#888;margin-bottom:10px">每列代表一個課格，欄位順序：<strong>老師姓名、科目、星期（1-6）、節次（am1-am4 / pm5-pm8）、課程名稱、班級</strong></p>
+  <div style="background:#e6f1fb;border:1px solid #b5d4f4;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <p style="font-size:13px;color:#185fa5;font-weight:600;margin-bottom:2px">📄 下載範本再填寫</p>
+      <p style="font-size:11px;color:#666">範本包含節次代號說明和範例資料</p>
+    </div>
+    <button onclick="downloadTeacherTemplate()" style="background:#185fa5;color:#fff;border:none;padding:8px 16px;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap">⬇️ 下載範本</button>
+  </div>
+  <div style="background:#fffbea;border:1px solid #ffe58a;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#7a5c00">
+    <strong>節次代號對照：</strong><br>
+    上午：am1=第1節(08:00) · am2=第2節(09:00) · am3=第3節(10:00) · am4=第4節(11:00)<br>
+    下午：pm5=第5節(13:00) · pm6=第6節(14:00) · pm7=第7節(15:00) · pm8=第8節(16:05)<br>
+    自主學習：am0
+  </div>
+  <textarea id="ti-text" rows="10" style="width:100%;padding:10px;border:1px solid #d5d3ca;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;margin-bottom:10px" placeholder="在此貼上從試算表複製的資料（不含標題列）..."></textarea>
+  <div id="ti-preview" style="display:none;margin-bottom:12px">
+    <p style="font-size:13px;font-weight:600;color:#3b6d11;margin-bottom:6px" id="ti-count"></p>
+    <div style="max-height:200px;overflow-y:auto;border:1px solid #d5d3ca;border-radius:8px;font-size:12px" id="ti-preview-table"></div>
+  </div>
+  <div id="ti-mode" style="margin-bottom:12px;padding:10px 14px;background:#f8f8f6;border-radius:8px;border:1px solid #e5e5e0">
+    <p style="font-size:13px;font-weight:600;margin-bottom:8px">匯入方式</p>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:6px">
+      <input type="radio" name="ti-mode" value="merge" checked style="margin:0"> 合併（保留現有老師，新增或更新匯入的老師）
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+      <input type="radio" name="ti-mode" value="replace" style="margin:0"> 取代（清空所有現有老師，全部重新匯入）
+    </label>
+  </div>
+  <div style="display:flex;gap:8px;justify-content:space-between">
+    <button onclick="previewTeacherImport()" class="btn-outline">預覽解析結果</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn-outline" onclick="closeTeacherImport()">取消</button>
+      <button class="btn-primary" onclick="doTeacherImport()">確認匯入</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 新增行事曆 Modal -->
+<div class="overlay" id="mc">
+<div class="modal" style="width:560px">
+  <p style="font-size:16px;font-weight:600;margin-bottom:1rem" id="cal-title">新增宣導活動</p>
+  <div style="margin-bottom:10px">
+    <label>學期</label>
+    <select id="cal-sem" style="width:100%;padding:8px 10px;border:1px solid #d5d3ca;border-radius:8px;font-size:14px;font-family:inherit;outline:none;margin-bottom:0;background:#fff">
+      <option value="">-- 選擇學期 --</option>
+    </select>
+  </div>
+  <div class="grid2" style="margin-bottom:10px">
+    <div><label>日期</label><input type="date" id="cal-date" oninput="calSyncDay()" style="margin-bottom:0"></div>
+    <div><label>星期</label><input type="text" id="cal-day" readonly style="margin-bottom:0;background:#f8f8f6;color:#888"></div>
+  </div>
+  <div style="margin-bottom:10px"><label>時間</label><input type="text" id="cal-time" placeholder="例：14:00～16:20"></div>
+  <div style="margin-bottom:10px;position:relative">
+    <label>學校</label>
+    <input type="text" id="cal-school" placeholder="輸入學校名稱關鍵字…" autocomplete="off" oninput="calSchoolSearch()" onblur="setTimeout(hideCalDrop,200)" style="margin-bottom:0">
+    <div id="cal-school-drop" style="display:none;position:absolute;left:0;right:0;top:100%;background:#fff;border:1px solid #d5d3ca;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:300;max-height:200px;overflow-y:auto"></div>
+  </div>
+  <div style="margin-bottom:10px"><label>活動類型</label><input type="text" id="cal-type" placeholder="例：招生博覽會、宣導說明會"></div>
+  <div class="grid2" style="margin-bottom:10px">
+    <div><label>班級數</label><input type="text" id="cal-class" placeholder="例：6" style="margin-bottom:0"></div>
+    <div><label>人數</label><input type="text" id="cal-people" placeholder="例：200" style="margin-bottom:0"></div>
+  </div>
+  <div style="margin-bottom:10px"><label>備註</label><input type="text" id="cal-note" placeholder="選填"></div>
+  <div style="margin-bottom:10px">
+    <label>指派老師（可多選）</label>
+    <div id="cal-teacher-list" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid #d5d3ca;border-radius:8px;min-height:44px;background:#fff"></div>
+  </div>
+  <div style="display:flex;gap:8px;justify-content:space-between;margin-top:1rem">
+    <button onclick="calToExport()" style="padding:9px 16px;background:#e6f1fb;border:1px solid #378add;border-radius:8px;color:#185fa5;font-family:inherit;cursor:pointer;font-size:13px">填入出差單 →</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn-outline" onclick="document.getElementById('mc').classList.remove('show')">取消</button>
+      <button class="btn-primary" onclick="saveCal()">儲存活動</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 新增/編輯 Modal -->
+<div class="overlay" id="me">
+<div class="modal">
+  <p style="font-size:16px;font-weight:600;margin-bottom:1rem" id="et">新增老師</p>
+  <div class="grid2" style="margin-bottom:12px">
+    <div><label>姓名</label><input type="text" id="en" style="margin-bottom:0"></div>
+    <div><label>科目</label><input type="text" id="esu" style="margin-bottom:0"></div>
+  </div>
+  <p style="font-size:12px;color:#888;margin-bottom:8px">點擊課格標記有課（綠色＝有課）</p>
+  <div class="sg" id="eg"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem">
+    <button class="btn-outline" onclick="document.getElementById('me').classList.remove('show')">取消</button>
+    <button class="btn-primary" onclick="savT()">儲存</button>
+  </div>
+</div>
+</div>
+
+<script>
+const DAYS=['一','二','三','四','五','六'];
+const PER=[
+  {id:'am0',label:'自主學習',time:'07:40-07:55'},
+  {id:'am1',label:'第1節',time:'08:00-08:50'},
+  {id:'am2',label:'第2節',time:'09:00-09:50'},
+  {id:'am3',label:'第3節',time:'10:00-10:50'},
+  {id:'am4',label:'第4節',time:'11:00-11:50'},
+  {id:'pm5',label:'第5節',time:'13:00-13:50'},
+  {id:'pm6',label:'第6節',time:'14:00-14:50'},
+  {id:'pm7',label:'第7節',time:'15:00-15:50'},
+  {id:'pm8',label:'第8節',time:'16:05-16:55'},
+];
+function pt(t){const[h,m]=t.split(':').map(Number);return h*60+m;}
+const PR=PER.map(p=>{const[s,e]=p.time.split('-');return{...p,start:pt(s),end:pt(e)};});
+
+let T=[
+  {id:'t1',name:'蔡佳穎',subject:'生物／自然',schedule:{'2_am1':'生物\n高一1','2_am2':'生物\n高一1','3_am1':'選修生物-生態演化\n高三1','3_am2':'選修生物-生態演化\n高三1','3_am3':'選修生物-生命起源\n高二1','3_am4':'選修生物-生命起源\n高二1','1_am1':'自然(生)\n國一1','1_am3':'專題閱讀與研究\n高三1','1_am4':'專題閱讀與研究\n高三1','4_am1':'生物\n高一1','5_am1':'生物\n多一2','5_am2':'生物\n多一2','4_pm5':'明藝學\n美一1','3_pm5':'健康\n國一1','3_pm6':'自然(生)\n國一1','2_pm5':'自然(生)\n國一1','2_pm6':'生物\n多一1','1_pm5':'化學1\n高二1','1_pm6':'化學1\n高二1','1_pm7':'生物\n多一1','6_pm7':'健康與護理\n高三1','5_pm7':'健康與護理\n高三1','4_pm8':'自然習作1\n高三1'}},
+  {id:'t2',name:'鄧建奇',subject:'數學',schedule:{'5_am1':'應用數學\n廣三1','5_am2':'應用數學\n廣三2','4_am1':'數學A\n高二1','2_am1':'數學甲\n高三1','1_am3':'數學A\n高二1','1_am4':'數學A\n高二1','5_pm5':'每週團體活動\n廣三2','4_pm5':'數學甲\n高三1','4_pm7':'應用數學\n廣三1','3_pm5':'應用數學\n廣三2','3_pm7':'數學A\n高二1','2_pm5':'應用數學\n廣三2','2_pm6':'應用數學\n廣三2','1_pm5':'數學甲\n高三1','1_pm6':'數學甲\n高三1','6_pm8':'數學習作\n廣三2','5_pm8':'數學習作\n廣三1','4_pm8':'數學習作\n高二1','3_pm8':'數學習作\n高三1'}},
+  {id:'t3',name:'鄧雅馨',subject:'設計／視覺藝術',schedule:{'2_am1':'設計概論\n廣二2','5_am3':'視覺藝術展演\n多二2','3_am3':'設計概論\n廣二2','2_am4':'設計概論\n廣一1','3_pm5':'設計概論\n廣二1','2_pm5':'視覺藝術展演\n多二1','2_pm7':'基礎圖學\n廣一1','3_pm8':'特色課程1\n廣二2','2_pm8':'專業課程\n廣一1'}},
+  {id:'t4',name:'鄭媛真',subject:'國語文',schedule:{'4_am1':'國語文\n廣三1','2_am1':'國語文\n廣二1','5_am2':'小說與電影\n廣二1','4_am2':'國語文\n國一1','3_am2':'國語文\n國一1','2_am2':'國語文\n廣二1','1_am2':'國語文\n國一1','5_am3':'國語文\n廣二1','4_am3':'國語文\n廣三2','1_am3':'國語文\n國一1','3_am4':'詩文選粹\n廣三1','2_am4':'詩文選粹\n廣三2','5_pm5':'每週團體活動\n廣三1','3_pm6':'國語文\n廣三2','3_pm7':'國語文\n廣三1','2_pm7':'國語文\n國一1','4_pm8':'國文習作\n廣三2','3_pm8':'國文習作\n廣三1','2_pm8':'閱讀理解\n國一1'}},
+  {id:'t5',name:'蕭雅函',subject:'數位攝錄影',schedule:{'2_am1':'數位攝錄影\n多一2','4_am3':'數位攝錄影實務\n多一1','3_am3':'專題實作\n多二1','3_am4':'專題實作\n多二1'}},
+  {id:'t6',name:'廖柏宇',subject:'英語文',schedule:{'5_am1':'英語文1\n高二1','5_am2':'英語文1\n高二1','4_am1':'英語文\n多一1','4_am2':'英語文\n多一1','3_am3':'英語文1\n高二1','3_am4':'英語文1\n高二1','2_am3':'展演實務1\n多一1','2_am4':'英語文\n美一1','1_am2':'旅遊英文二\n高三1','1_am3':'英語文\n美一1','1_am4':'英語文\n美一1','5_pm5':'每週團體活動\n多一1','4_pm5':'英語文\n美三1','4_pm7':'英文全方位\n美三1','6_pm8':'英文習作\n美三1','5_pm8':'英文習作\n高三1','4_pm8':'英文習作\n多一1','3_pm8':'英文習作\n美一1','2_pm8':'英文習作1\n高二1'}},
+  {id:'t7',name:'廖國佑',subject:'數學',schedule:{'4_am1':'數學B\n高二1','3_am1':'數學\n國一1','2_am1':'數學乙\n高三1','3_am3':'數學\n國一1','3_am4':'數學\n國一1','1_am3':'數學B\n高二1','1_am4':'數學B\n高二1','4_am4':'數學\n國一1','4_pm5':'數學乙\n高三1','3_pm5':'數學A\n高一1','3_pm6':'數學A\n高一1','3_pm7':'數學B\n高二1','2_pm5':'數學A\n高一1','2_pm6':'數學A\n高一1','1_pm5':'數學乙\n高三1','1_pm6':'數學乙\n高三1','6_pm8':'數學習作\n高一1','4_pm8':'數學習作1\n高二1','3_pm8':'數學習作1\n高三1','2_pm8':'邏輯思維\n國一1'}},
+  {id:'t8',name:'劉崇百',subject:'化學',schedule:{'5_am1':'與大學有約-AP\n高三1','5_am2':'與大學有約-AP\n高三1','5_am3':'每週彈性學習\n高一1','4_am3':'化學\n高一1','2_am1':'選修化學-物質構造\n高二1','2_am2':'選修化學-物質構造\n高二1','1_pm5':'化學\n高二1','1_pm6':'化學\n高二1','3_pm6':'選修化學-化學反應\n高三1','3_pm7':'選修化學-化學反應\n高三1','4_pm7':'化學\n高一1','6_pm8':'自然習作\n高一1','4_pm8':'自然習作\n高一1','3_pm8':'微科學實作\n國一1','1_pm8':'自然習作\n高三1'}},
+  {id:'t9',name:'劉雅惠',subject:'英語文',schedule:{'5_am1':'英語文\n高二1','3_am1':'英語文\n廣二1','2_am1':'英文全方位\n廣三2','1_am1':'英文閱讀與寫作\n多三2','1_am2':'英語文\n多三2','4_am3':'英文閱讀與寫作\n多三2','3_am3':'英語文\n高二1','2_am3':'英語文\n廣二1','5_am4':'英語文\n多三2','3_am4':'英語文\n高二1','5_pm5':'每週團體活動\n廣二1','4_pm5':'英語文\n廣三1','3_pm5':'英文全方位\n多三2','3_pm6':'英語文\n廣三1','6_pm8':'英文習作\n多三2','5_pm8':'英文習作\n廣二1','3_pm8':'英文習作\n廣三1','2_pm8':'英文習作\n高二1'}},
+  {id:'t10',name:'陳諺葶',subject:'美術／設計',schedule:{'6_am1':'彩繪技法\n多三2','6_am2':'彩繪技法\n多三2','5_am1':'健康與護理\n美三1','4_am2':'設計概論\n美二1','4_am3':'每週彈性學習\n多二2','4_am4':'美術\n高二1','3_am2':'設計概論\n美二1','3_am3':'每週彈性學習\n多二2','2_am1':'繪畫基礎實務\n多二2','2_am2':'繪畫基礎實務\n多二2','3_pm5':'複合媒材創作\n多二2','3_pm6':'複合媒材創作\n多二2','3_pm7':'複合媒材創作\n多二2','4_pm7':'美術\n高二1','2_pm5':'油彩構成繪製\n廣二2','2_pm6':'油彩構成繪製\n廣二2','2_pm7':'油彩構成繪製\n廣二2','3_pm8':'特色課程1\n多二2','2_pm8':'特色課程\n廣二2'}},
+  {id:'t11',name:'黃文麗',subject:'造型設計',schedule:{'6_am1':'圖文編排實習1\n美三1','6_am2':'印刷與設計實務1\n廣三1','5_am1':'時尚工藝實務\n美二1','5_am2':'時尚工藝實務\n美二1','4_am1':'造型設計\n廣三2','4_am2':'造型設計\n廣三2','4_am4':'印刷與設計實務1\n美三1','3_am1':'造型設計\n廣三2','3_am2':'基礎圖學實習\n美一1','3_am3':'基礎圖學實習\n美一1','3_am4':'基礎圖學實習\n美一1','2_am1':'印刷與設計實務\n廣三2','2_am3':'基礎圖學實習\n美一1','1_am1':'造型設計\n美三1','1_am2':'造型設計\n美三1','1_am4':'造型設計\n廣一1','1_pm5':'立體造形實作1\n美二1','1_pm6':'立體造形實作1\n美二1','4_pm6':'造型設計\n廣三1','6_pm8':'專業課程\n廣三1','3_pm8':'專業課程\n廣三2','1_pm8':'專業課程1\n美一1'}},
+  {id:'t12',name:'黃雅音',subject:'體育',schedule:{'3_am1':'體育\n廣三1','5_am2':'體育\n多三1','4_am2':'體育\n高三1','2_am2':'體育\n美三1','5_am3':'體育\n國一1','5_am4':'體育\n國一1','4_am4':'體育\n廣二1','3_am4':'體育\n廣三2','2_am4':'體育\n美二1','1_am4':'體育\n多三1','2_am3':'體育\n廣二1','3_pm5':'體育\n美二1','4_pm6':'體育\n美三1','3_pm6':'體育\n美一1','2_pm6':'體育\n廣三1','1_pm6':'體育\n廣二1','4_pm7':'體育\n美一1','2_pm7':'體育\n高三1'}},
+  {id:'t13',name:'廖芳慧',subject:'數學',schedule:{'5_am1':'數學\n多二2','5_am2':'數學\n多二2','5_am3':'應用數學\n多二2','4_am4':'數學\n多二2','3_am1':'數學\n多二1','3_am2':'數學\n多二1','2_am1':'應用數學\n美三1','2_am3':'應用數學\n美三1','2_am4':'應用數學\n美三1','5_pm5':'每週團體活動\n美三1','4_pm5':'應用數學\n多三2','3_pm6':'應用數學\n多三2','3_pm7':'應用數學\n多三1','2_pm6':'應用數學\n多三1','2_pm7':'應用數學\n多三1','1_pm6':'數學\n多二1','6_pm8':'數學習作\n多三1','5_pm8':'數學習作\n多二2','4_pm8':'數學習作\n美三1','3_pm8':'數學習作\n多二1','2_pm8':'數學習作\n多二2'}},
+  {id:'t14',name:'張斐婷',subject:'數位攝影',schedule:{'5_am1':'數位商業攝影實習\n廣二2','5_am2':'數位商業攝影實習\n廣二2','4_am1':'數位商業攝影實習\n廣二1','4_am2':'數位商業攝影實習\n廣二1','3_pm5':'基礎攝影實習\n廣一1','3_pm6':'基礎攝影實習\n廣一1','3_pm7':'數位印刷實務\n廣二1','3_pm8':'專業課程\n廣一1','2_pm5':'基礎攝影實習\n美一1','2_pm6':'基礎攝影實習\n美一1'}},
+  {id:'t15',name:'曹君言',subject:'國語文',schedule:{'3_am2':'小說與電影\n廣二2','2_am2':'國語文\n廣二2','1_am2':'國語文\n廣二2','3_am3':'每週彈性學習\n多二2','3_am4':'每週彈性學習\n多二2','2_am3':'小說與電影\n多二2','2_am4':'國語文\n多二2','1_am3':'國語文\n廣二2','1_am4':'國語文\n廣二2','5_am4':'國語文\n多二2','6_pm5':'每週團體活動\n廣二2','4_pm5':'小說與電影\n多二2','3_pm6':'國語文\n美三1','2_pm6':'國語文\n美三1','2_pm7':'詩文選粹\n美三1','4_pm8':'國文習作\n多二2','1_pm8':'國文習作\n美三1'}},
+  {id:'t16',name:'梁愷涵',subject:'設計／印刷',schedule:{'3_am1':'色彩計畫\n美三1','5_am2':'印刷與設計實務\n美三1','4_am1':'印刷與設計實務\n廣三1','4_am2':'印刷與設計實務\n廣三1','3_am2':'印刷與設計實務\n廣三1','5_am3':'色彩計畫\n廣三1','4_am3':'產品設計實務\n美三1','4_am4':'產品設計實務\n美三1','3_am3':'影音剪輯實習\n廣三1','3_am4':'印刷與設計實務\n廣二2','2_am2':'色彩計畫\n廣三2','2_am3':'色彩計畫\n廣二2','2_am4':'圖文編排實習\n美三1','1_am3':'色彩計畫\n美三1','5_pm5':'每週團體活動\n美一1','2_pm5':'影音剪輯實習\n廣三2','3_pm5':'基本設計實習\n美一1','3_pm6':'基本設計實習\n美一1','3_pm7':'基本設計實習\n美一1','4_pm8':'專業課程\n美三1'}},
+  {id:'t17',name:'陳芝亞',subject:'設計／資訊',schedule:{'6_am1':'印刷與設計實務2\n廣三2','4_am1':'設計圖法實作\n廣三2','4_am2':'設計圖法實作\n廣三2','5_am3':'每週彈性學習\n廣二2','5_am4':'每週彈性學習\n廣一1','3_am3':'基礎圖學實習\n廣一1','3_am4':'基礎圖學實習\n廣一1','2_am1':'專題實作\n廣二1','2_am2':'專題實作\n廣二1','2_am3':'資訊科技\n廣一1','2_am4':'資訊科技\n廣一1','4_pm5':'數位影像處理實習\n美二1','4_pm6':'數位影像處理實習\n美二1','4_pm7':'數位影像處理實習\n美二1','3_pm5':'空間設計實務\n美二1','3_pm6':'空間設計實務\n美一1','1_pm5':'圖文編排實習\n廣三1','1_pm6':'圖文編排實習\n廣三1','1_pm7':'圖文編排實習\n廣三1','6_pm8':'專業課程1\n廣二2','5_pm8':'專業課程1\n廣一1','3_pm8':'專業課程1\n廣三2','1_pm8':'專業課程1\n廣二1'}},
+  {id:'t18',name:'徐鳳翎',subject:'數學',schedule:{'3_am1':'數學\n廣一1','2_am1':'數學\n美二1','2_am2':'數學\n美二1','5_am4':'數學\n廣一1','2_pm6':'數學\n廣一1','3_pm7':'數學\n美二1','6_pm8':'數學習作\n廣一1','3_pm8':'數學習作\n美二1'}},
+  {id:'t19',name:'張以平',subject:'設計／資訊',schedule:{'5_am1':'資訊科技\n美一1','5_am2':'資訊科技\n美一1','4_am2':'基本設計實習\n廣一1','4_am3':'基本設計實習\n廣一1','4_am4':'基本設計實習\n廣一1','3_am2':'設計史\n廣三1','3_am3':'設計史\n廣三2','3_am4':'健康與護理\n廣三1','2_am3':'影音剪輯實習1\n廣三1','2_am4':'每週彈性學習\n廣二1','1_am2':'圖文編排實習\n廣三2','1_am3':'圖文編排實習\n廣三2','1_am4':'圖文編排實習\n廣三2','4_pm5':'專題實作\n廣二2','4_pm6':'專題實作\n廣二2','4_pm7':'健康與護理\n廣三2','3_pm5':'設計史\n廣三1','2_pm5':'設計史\n廣三2','2_pm7':'影音剪輯實習1\n廣三2','3_pm8':'專業課程\n美二1'}},
+  {id:'t20',name:'張剛銘',subject:'體育',schedule:{'5_am1':'體育\n廣一1','5_am2':'體育\n廣一1','4_am3':'體育\n多二2','3_am3':'體育\n多一2','3_am4':'體育\n多一2','2_am1':'體育\n廣二2','2_am2':'體育\n高一1','2_am3':'體育\n多二2','2_am4':'體育\n廣二2','5_am4':'體育\n廣二2','4_pm5':'體育\n多二1','3_pm5':'體育\n高二1','2_pm5':'體育\n多一1','2_pm6':'體育\n多一1','2_pm7':'體育\n多二1'}},
+  {id:'t21',name:'張婉柔',subject:'英語文',schedule:{'4_am1':'英語文\n多一2','4_am2':'英語文\n多一2','3_am1':'英語文\n美二1','3_am3':'英語文\n美二1','2_am1':'英語文\n多二2','2_am2':'英語文\n多二2','2_am3':'英語文\n美二1','1_am1':'旅遊英文二1\n高三1','1_am2':'旅遊英文二1\n高三1','1_am3':'英語文\n廣一1','1_am4':'英語文\n廣一1','3_am4':'英語文\n廣三2','4_am4':'英語文\n廣三2','3_pm5':'英語文\n廣三2','4_pm6':'英文電影賞析\n多二2','3_pm7':'英文全方位\n廣三2','6_pm8':'英文習作\n多二2','5_pm8':'英文習作\n美二1','4_pm8':'英文習作\n多一2','3_pm8':'英文習作\n廣一1','2_pm8':'英文習作\n廣三2'}},
+  {id:'t22',name:'林愛詠',subject:'美術／數位',schedule:{'4_am1':'菜展理論與實務\n多三2','4_am2':'數位影像處理實習\n廣二1','4_am3':'數位影像處理實習\n廣二1','4_am4':'數位影像處理實習\n廣二1','3_am1':'素描實作\n多二2','3_am2':'素描實作\n多二2','3_pm5':'菜展理論與實務\n多三1','4_pm5':'版面編排實作\n多三1','4_pm6':'版面編排實作\n多三1','5_pm5':'每週團體活動\n多一2','2_pm5':'水彩實作\n多二2','2_pm6':'水彩實作\n多二2','2_pm7':'數位印刷實務\n廣二2','6_pm8':'專業課程1\n多一2','5_pm8':'專業課程\n多三1','4_pm8':'專業課程\n多三2','2_pm8':'專業課程\n廣二2'}},
+  {id:'t23',name:'林穎雀',subject:'國語文／閩南語',schedule:{'3_am1':'國語文\n高一1','2_am1':'國語文\n美二1','5_am2':'本土語言\n國一1','5_am3':'國語文\n美二1','4_am3':'閩南語\n多一2','4_am4':'閩南語\n美一1','2_am3':'國語文\n高一1','2_am4':'國語文\n高一1','1_am3':'國語文\n高一1','1_am4':'國語文\n高一1','5_am4':'每週彈性學習\n高一1','5_pm5':'每週團體活動\n高一1','4_pm5':'閩南語\n高一1','4_pm6':'閩南語\n多一1','4_pm7':'閩南語\n廣一1','3_pm6':'國語文\n美二1','6_pm8':'國文習作\n美二1','3_pm8':'國文習作\n高一1'}},
+  {id:'t24',name:'柯燈杰',subject:'美術／動漫',schedule:{'5_am1':'專題實作\n美二1','5_am2':'專題實作\n美二1','5_am3':'綜合表現技法\n廣三1','5_am4':'綜合表現技法\n廣三1','4_am3':'綜合表現技法\n廣三1','4_am4':'綜合表現技法\n廣三2','4_am2':'綜合表現技法\n廣三2','3_am3':'美術\n美二1','3_am4':'美術\n美二1','2_am1':'動漫角色設計實作\n廣三1','2_am2':'動漫角色設計實作\n廣三1','2_am3':'表現技法實習\n美二1','2_am4':'表現技法實習\n美二1','5_pm5':'每週團體活動\n美二1','4_pm5':'動漫角色設計實作\n廣三2','4_pm6':'動漫角色設計實作\n廣三2','3_pm5':'凸版實務\n廣二1','3_pm6':'凸版實務\n廣二1','3_pm7':'凸版實務\n廣二1','3_pm8':'特色課程\n廣二1','1_pm7':'立體造形實作2\n美二1','1_pm8':'專業課程2\n美二1'}},
+  {id:'t25',name:'徐伯君',subject:'數學／資訊',schedule:{'3_am1':'生活科技\n高二1','3_am2':'生活科技\n高二1','4_am2':'數學\n美一1','4_am3':'數學\n美一1','5_am3':'數學\n多一1','5_am4':'數學\n多一1','2_am2':'數學\n美一1','3_pm5':'Python程式設計\n高三1','3_pm6':'Python程式設計\n高三1','2_pm7':'數學\n多一1','4_pm8':'數學習作\n美一1','3_pm8':'數學習作\n多一1'}},
+  {id:'t26',name:'吳維恩',subject:'美術',schedule:{'5_am1':'藝術鑑賞\n多三1','4_am1':'繪畫基礎實務\n多二1','4_am2':'繪畫基礎實務\n多二1','4_am3':'彩繪技法\n多三1','4_am4':'彩繪技法\n多三1','3_am1':'水彩實作\n多一1','3_am2':'水彩實作\n多一1','3_am3':'虛擬攝影棚實務\n多三1','3_am4':'虛擬攝影棚實務\n多三1','2_am1':'作品集實作\n多三1','2_am2':'作品集實作\n多三1','2_am3':'虛擬攝影棚實務\n多三2','2_am4':'虛擬攝影棚實務\n多三2','1_am3':'素描實作\n多一1','1_am4':'素描實作\n多一1','5_pm5':'每週團體活動\n多三1','4_pm7':'藝術鑑賞\n多三2','4_pm8':'專業課程\n多一1','3_pm8':'專業課程1\n多三1','2_pm8':'專業課程1\n多三2'}},
+  {id:'t27',name:'李姿慧',subject:'多媒體／視覺藝術',schedule:{'4_am1':'作品集實作\n多三2','4_am2':'作品集實作\n多三2','3_am1':'影音後製實作\n多三1','3_am2':'影音後製實作\n多三1','2_am1':'影音後製實作\n多三2','2_am2':'影音後製實作\n多三2','4_am3':'每週彈性學習\n多二1','4_am4':'數位攝錄影實務1\n多一1','3_am3':'視覺藝術展演\n多三1','3_am4':'每週彈性學習\n多二1','2_am3':'面板編排實作\n多三2','2_am4':'面板編排實作\n多三2','5_pm5':'每週團體活動\n多三2','1_pm5':'視覺藝術展演\n多三2','1_pm6':'視覺藝術展演\n多三1','1_pm7':'視覺藝術展演\n多三1','4_pm6':'視覺藝術展演\n多三2','4_pm7':'視覺藝術展演\n多三2','3_pm8':'專業課程\n多二2'}},
+  {id:'t28',name:'沈樹玉',subject:'英語文',schedule:{'5_am1':'英語文\n高一1','5_am2':'英語文\n高一1','5_am3':'英文閱讀與寫作\n多三1','5_am4':'英文全方位\n多三1','4_am3':'英文閱讀與寫作\n多三1','4_am4':'英語文\n國一1','3_am2':'英語文\n高一1','3_am3':'英語文\n高一1','2_am2':'英語文\n多三1','3_pm5':'英語文\n多三1','4_pm7':'英語文\n國一1','4_pm8':'多益Bridge\n國一1','3_pm7':'英語文\n國一1','3_pm8':'英文習作\n多三1','1_pm8':'英文習作\n高一1'}},
+  {id:'t29',name:'阮芸妮',subject:'國語文',schedule:{'2_am1':'國語文\n多一1','3_am3':'國語文\n多一2','3_am4':'國語文\n多一2','5_am3':'每週彈性學習\n高二1','5_am4':'每週彈性學習\n高二1','5_pm5':'每週團體活動\n高二1','4_pm5':'國語文\n高二1','3_pm5':'國語文\n高二1','4_pm6':'國語文\n多一2','3_pm7':'國語文\n多一1','2_pm7':'國語文\n高二1','1_pm7':'國語文\n高二1','4_pm8':'國文習作\n多一2','3_pm8':'國文習作\n高二1','2_pm8':'國文習作\n多一1'}},
+  {id:'t30',name:'王美智',subject:'歷史／社會',schedule:{'4_am1':'社會(歷史)\n國一1','3_am1':'科技環境與藝術的歷史\n高三1','2_am1':'歷史\n美一1','2_am2':'歷史\n高一1','1_am1':'歷史\n美一1','1_am2':'歷史\n多一1','5_am3':'每週彈性學習\n高三1','5_am4':'每週彈性學習\n高三1','3_am4':'歷史\n高一1','2_am3':'探究與實作\n高二1','2_am4':'探究與實作\n高二1','4_pm5':'歷史\n多二2','3_pm5':'歷史\n多一1','2_pm6':'科技環境與藝術的歷史\n高三1','2_pm7':'科技環境與藝術的歷史\n高三1','3_pm7':'歷史\n多二2','1_pm7':'家政\n國一1','6_pm8':'社會習作\n高二1','1_pm8':'社會習作\n高三1'}},
+  {id:'t31',name:'何宜珍',subject:'設計／數位',schedule:{'4_am1':'數位影像處理實習\n廣二2','4_am2':'數位影像處理實習\n廣二2','4_am3':'數位影像處理實習\n廣二2','4_am4':'設計圖法實作\n廣三1','6_am3':'設計圖法實作\n美三1','2_am3':'設計圖法實作\n廣三1','1_am3':'設計圖法實作\n廣三1','2_pm5':'印刷與設計實務2\n美三1','1_pm5':'設計圖法實作\n美三1','2_pm7':'印刷與設計實務2\n廣三1','6_pm8':'專業課程1\n美三1','1_pm8':'專業課程1\n廣三1'}},
+  {id:'t32',name:'何宜展',subject:'數學',schedule:{'3_pm5':'數學B\n高一1','3_pm6':'數學B\n高一1','2_pm6':'數學B\n高一1','2_pm7':'數學B\n高一1','6_pm8':'數學習作1\n高一1'}},
+  {id:'t33',name:'吳淑娟',subject:'國語文',schedule:{'5_am1':'國語文\n多二1','4_am1':'打造大明星\n高三1','4_am3':'小說與電影\n高三1','3_am2':'國語文\n多三2','3_am3':'詩文選粹\n多三2','2_am3':'小說與電影\n高三1','2_am4':'小說與電影\n多二1','1_am3':'國語文\n多二1','1_am4':'國語文\n多二1','5_pm5':'每週團體活動\n高三1','3_pm5':'國語文\n多二1','4_pm7':'小說與電影\n多二1','3_pm7':'國語文\n多三2','1_pm7':'每週彈性學習\n多三2','6_pm8':'國文習作\n高三1','5_pm8':'國文習作\n多三2','3_pm8':'國文習作\n多二1'}},
+];
+
+let selDay=1,selT=[],editId=null,editSch={};
+
+function sw(tab,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('page-'+tab).classList.add('active');
+  // 固定列印按鈕只在出差單頁顯示
+  const fp=document.getElementById('float-print');
+  if(fp) fp.style.display=(tab==='export')?'flex':'none';
+}
+function syncDayFromDate(){
+  const val=document.getElementById('qdate').value;
+  if(!val) return;
+  const dt=new Date(val);
+  const dow=dt.getDay(); // 0=日
+  const roc=dt.getFullYear()-1911;
+  const m=String(dt.getMonth()+1).padStart(2,'0');
+  const d=String(dt.getDate()).padStart(2,'0');
+  const wNames=['日','一','二','三','四','五','六'];
+  const disp=document.getElementById('date-display');
+  if(dow===0){
+    disp.textContent='⚠️ 所選日期為星期日，請確認';
+    disp.style.background='#fcebeb';disp.style.color='#a32d2d';
+    disp.style.display='block';
+    return;
+  }
+  disp.textContent=`${roc} 年 ${m} 月 ${d} 日（週${wNames[dow]}）`;
+  disp.style.background='#e6f1fb';disp.style.color='#185fa5';
+  disp.style.display='block';
+  sd(dow); // 自動切換星期按鈕
+  // 同步帶入出差單日期
+  document.getElementById('fd').value=val;
+}
+function sd(d){
+  selDay=d;
+  document.querySelectorAll('[id^=day-]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('day-'+d).classList.add('active');
+}
+
+// 建立節次勾選框
+function buildPeriodChecks(){
+  const el=document.getElementById('period-checks');
+  el.innerHTML=PER.map((p,i)=>`
+    <label style="display:flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #d5d3ca;border-radius:8px;cursor:pointer;font-size:13px;background:#fff;user-select:none">
+      <input type="checkbox" id="pc-${p.id}" style="width:16px;height:16px;margin:0;cursor:pointer" ${i>0&&i<5?'':''}> 
+      <span><strong>${p.label}</strong><br><span style="font-size:11px;color:#888">${p.time}</span></span>
+    </label>`).join('');
+}
+
+function getSelPeriods(){
+  return PER.filter(p=>document.getElementById('pc-'+p.id)&&document.getElementById('pc-'+p.id).checked);
+}
+
+function isHS3(val){
+  // 判斷是否為高三課程
+  return val && (val.includes('高三') || val.includes('三年'));
+}
+
+function rq(){
+  const aff=getSelPeriods();
+  if(!aff.length){alert('請至少勾選一個節次');return;}
+  
+  const avail=[],adjustable=[],busy=[];
+  T.forEach(t=>{
+    const busySlots=aff.filter(p=>t.schedule[`${selDay}_${p.id}`]);
+    if(!busySlots.length){
+      avail.push(t);
+    } else {
+      // 檢查有課的節次是否全為高三課程（可調課）
+      const allHS3=busySlots.every(p=>isHS3(t.schedule[`${selDay}_${p.id}`]));
+      if(allHS3) adjustable.push({...t,busySlots});
+      else busy.push({...t,busySlots});
+    }
+  });
+
+  const dn=['','一','二','三','四','五','六'][selDay];
+  const periodLabels=aff.map(p=>p.label).join('、');
+  const qd=document.getElementById('qdate').value;
+  const dateLabel=qd?fmtDate(qd):`週${dn}`;
+  let html=`<div style="font-size:13px;color:#185fa5;font-weight:600;margin-bottom:12px;padding:10px 14px;background:#e6f1fb;border-radius:8px;border:1px solid #b5d4f4">📅 ${dateLabel}・${periodLabels}</div>`;
+
+  html+=`<p class="sl" style="color:#3b6d11">✓ 完全空堂（${avail.length} 位）</p>`;
+  if(!avail.length) html+='<div class="es" style="padding:1rem">此時段無完全空堂老師</div>';
+  avail.forEach(t=>{
+    const isSel=selT.includes(t.id);
+    html+=`<div class="ri ${isSel?'selected':'available'}">
+      <div>
+        <span style="font-size:14px;font-weight:600">${t.name} 老師</span>
+        <span style="font-size:12px;color:#666;margin-left:6px">${t.subject}</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn-sm" onclick="oV('${t.id}')">檢視課表</button>
+        <button class="btn-sm" onclick="tSel('${t.id}')" style="${isSel?'border-color:#378add;color:#185fa5;font-weight:600':''}">${isSel?'✓ 已選':'選取'}</button>
+      </div>
+    </div>`;
+  });
+
+  if(adjustable.length){
+    html+=`<p class="sl" style="color:#b85c00;margin-top:16px">🔄 高三課程可調課（${adjustable.length} 位）</p>`;
+    adjustable.forEach(t=>{
+      const isSel=selT.includes(t.id);
+      const slots=t.busySlots.map(p=>{const v=t.schedule[`${selDay}_${p.id}`]||'';const pts=v.split('\n');return `${p.label}：${pts[0]} ${pts[1]||''}`;}).join('、');
+      html+=`<div class="ri ${isSel?'selected':''}" style="${!isSel?'border-color:#f5a623;background:#fffbea':''}">
+        <div>
+          <span style="font-size:14px;font-weight:600">${t.name} 老師</span>
+          <span style="font-size:12px;color:#666;margin-left:6px">${t.subject}</span>
+          <div style="font-size:11px;color:#b85c00;margin-top:3px">${slots}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm" onclick="oV('${t.id}')">檢視課表</button>
+          <button class="btn-sm" onclick="tSel('${t.id}')" style="${isSel?'border-color:#378add;color:#185fa5;font-weight:600':'border-color:#f5a623;color:#b85c00'}">${isSel?'✓ 已選':'選取'}</button>
+        </div>
+      </div>`;
+    });
+  }
+
+  if(busy.length){
+    html+=`<p class="sl" style="color:#888;margin-top:16px">✗ 有課無法配合（${busy.length} 位）</p>`;
+    busy.forEach(t=>{
+      const slots=t.busySlots.map(p=>{const v=t.schedule[`${selDay}_${p.id}`]||'';const pts=v.split('\n');return `${p.label}：${pts[0]} ${pts[1]||''}`;}).join('、');
+      html+=`<div class="ri unavailable">
+        <div>
+          <span style="font-size:14px;font-weight:600">${t.name} 老師</span>
+          <span style="font-size:12px;color:#666;margin-left:6px">${t.subject}</span>
+          <div style="font-size:11px;color:#999;margin-top:3px">${slots}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="btn-sm" onclick="oV('${t.id}')">檢視課表</button>
+          <span style="font-size:11px;color:#a32d2d;background:#fcebeb;padding:2px 8px;border-radius:20px">有課</span>
+        </div>
+      </div>`;
+    });
+  }
+
+  document.getElementById('qr').innerHTML=html;
+  uSB();
+}
+// ── 學校資料庫 ──
+const SCHOOLS=[
+  {n:'東峰國民中學',a:'臺中市東區仁和路330號'},
+  {n:'育英國民中學',a:'臺中市東區育英路30號'},
+  {n:'崇倫國民中學',a:'臺中市南區忠明南路653號'},
+  {n:'四育國民中學',a:'臺中市南區復興路二段152號'},
+  {n:'向上國民中學',a:'臺中市西區美村路一段389號'},
+  {n:'居仁國民中學',a:'臺中市西區自由路一段97號'},
+  {n:'光明國民中學',a:'臺中市西區自由路一段75號'},
+  {n:'五權國民中學',a:'臺中市北區英才路1號'},
+  {n:'雙十國民中學',a:'臺中市北區力行路258號'},
+  {n:'立人國民中學',a:'臺中市北區北平路一段62號'},
+  {n:'四張犁國民中學',a:'臺中市北屯區后庄路699號'},
+  {n:'北新國民中學',a:'臺中市北屯區柳陽東街180號'},
+  {n:'大德國民中學',a:'臺中市北屯區雷中街2之23號'},
+  {n:'崇德國民中學',a:'臺中市北屯區崇德路二段227號'},
+  {n:'三光國民中學',a:'臺中市北屯區三光一街77號'},
+  {n:'安和國民中學',a:'臺中市西屯區天助街1號'},
+  {n:'至善國民中學',a:'臺中市西屯區青海路二段308號'},
+  {n:'中山國民中學',a:'臺中市西屯區寧夏路179號'},
+  {n:'漢口國民中學',a:'臺中市西屯區漢口路一段54之1號'},
+  {n:'福科國民中學',a:'臺中市西屯區福林路333號'},
+  {n:'大業國民中學',a:'臺中市南屯區大業路100號'},
+  {n:'萬和國民中學',a:'臺中市南屯區永春東路885號'},
+  {n:'黎明國民中學',a:'臺中市南屯區三義里1鄰干城街88號'},
+  {n:'大墩國民中學',a:'臺中市南屯區惠中路三段98號'},
+  {n:'豐陽國民中學',a:'臺中市豐原區朝陽路33號'},
+  {n:'豐原國民中學',a:'臺中市豐原區三豐路一段321號'},
+  {n:'豐東國民中學',a:'臺中市豐原區豐東路75號'},
+  {n:'豐南國民中學',a:'臺中市豐原區豐南街151號'},
+  {n:'后里國民中學',a:'臺中市后里區眉山里中眉路169號'},
+  {n:'神圳國民中學',a:'臺中市神岡區神清路61號'},
+  {n:'大雅國民中學',a:'臺中市大雅區大雅里20鄰學府路280號'},
+  {n:'大華國民中學',a:'臺中市大雅區雅環路1段2號'},
+  {n:'潭子國民中學',a:'臺中市潭子區潭興路二段419巷1號'},
+  {n:'潭秀國民中學',a:'臺中市潭子區雅潭路一段175號'},
+  {n:'鹿寮國民中學',a:'臺中市沙鹿區光華路385號'},
+  {n:'北勢國民中學',a:'臺中市沙鹿區北勢里英才路150號'},
+  {n:'公明國民中學',a:'臺中市沙鹿區公明里中清路6段567號'},
+  {n:'沙鹿國民中學',a:'臺中市沙鹿區中正街1號'},
+  {n:'大安國民中學',a:'大安港路691號'},
+  {n:'龍井國民中學',a:'臺中市龍井區竹坑里觀光路9號'},
+  {n:'四箴國民中學',a:'臺中市龍井區新庄里中沙路2號'},
+  {n:'大道國民中學',a:'臺中市大肚區大東里仁德路60號'},
+  {n:'石岡國民中學',a:'臺中市石岡區梅子里豐勢路國中巷1號'},
+  {n:'烏日國民中學',a:'臺中市烏日區新興路457號'},
+  {n:'溪南國民中學',a:'臺中市烏日區溪南路一段731號'},
+  {n:'光德國民中學',a:'臺中市烏日區信義街99號'},
+  {n:'成功國民中學',a:'臺中市大里區至善路157號'},
+  {n:'光榮國民中學',a:'臺中市大里區東榮路280號'},
+  {n:'光正國民中學',a:'臺中市大里區鳳凰路68號'},
+  {n:'爽文國民中學',a:'臺中市大里區永隆3街1號'},
+  {n:'立新國民中學',a:'臺中市大里區立仁里甲堤路236號'},
+  {n:'霧峰國民中學',a:'臺中市霧峰區北柳里國中路110號'},
+  {n:'太平國民中學',a:'臺中市太平區中山路2段116號'},
+  {n:'中平國民中學',a:'臺中市太平區太平路300號'},
+  {n:'新光國民中學',a:'臺中市太平區樹德九街139號'},
+  {n:'東勢國民中學',a:'臺中市東勢區東崎路5段415號'},
+  {n:'東華國民中學',a:'臺中市東勢區東關路五段500號'},
+  {n:'東新國民中學',a:'臺中市東勢區東新里東環街123號'},
+  {n:'軍功國民小學',a:'臺中市北屯區軍福十三路300號'},
+  {n:'廍子國民小學',a:'臺中市北屯區景賢路290號'},
+  {n:'北屯國民小學',a:'臺中市北屯區進化北路2號'},
+  {n:'東光國民小學',a:'臺中市北屯區東光路926號'},
+  {n:'文心國民小學',a:'臺中市北屯區文心路四段575號'},
+  {n:'四維國民小學',a:'臺中市北屯區文心路四段956號'},
+  {n:'松強國民小學',a:'臺中市北屯區崇德九路198號'},
+  {n:'僑孝國民小學',a:'臺中市北屯區北屯路435號'},
+  {n:'逢甲國民小學',a:'臺中市北屯區北坑巷60號'},
+  {n:'仁美國民小學',a:'臺中市北屯區崇德路三段568號'},
+  {n:'松竹國民小學',a:'臺中市北屯區昌平路二段12號'},
+  {n:'建功國民小學',a:'臺中市北屯區軍功里軍和街43號'},
+  {n:'豐原國民小學',a:'臺中市豐原區新生北路155號'},
+  {n:'瑞穗國民小學',a:'臺中市豐原區西安街72號'},
+  {n:'南陽國民小學',a:'臺中市豐原區南陽路440號'},
+  {n:'富春國民小學',a:'臺中市豐原區中山路455號'},
+  {n:'豐村國民小學',a:'臺中市豐原區水源路341號'},
+  {n:'翁子國民小學',a:'臺中市豐原區豐勢路二段290巷3號'},
+  {n:'豐田國民小學',a:'臺中市豐原區豐田里13鄰田心路二段290號'},
+  {n:'合作國民小學',a:'臺中市豐原區西勢路410號'},
+  {n:'葫蘆墩國民小學',a:'臺中市豐原區葫蘆墩一街250號'},
+  {n:'福陽國民小學',a:'臺中市豐原區南陽路綠山巷83號'},
+  {n:'大雅國民小學',a:'臺中市大雅區二和里學府路230號'},
+  {n:'大明國民小學',a:'臺中市大雅區中清路四段158號'},
+  {n:'上楓國民小學',a:'臺中市大雅區上楓里楓林街232號'},
+  {n:'僑忠國民小學',a:'臺中市潭子區中山路二段31號'},
+  {n:'東寶國民小學',a:'臺中市潭子區雅潭路三段2號'},
+  {n:'新興國民小學',a:'臺中市潭子區潭興路一段25號'},
+  {n:'潭陽國民小學',a:'臺中市潭子區潭陽路19號'},
+  {n:'頭家國民小學',a:'臺中市潭子區得福街185號'},
+  {n:'潭子國民小學',a:'臺中市潭子區中山路二段435號'},
+  {n:'新高國民小學',a:'臺中市太平區立功路68號'},
+  {n:'新平國民小學',a:'臺中市太平區樹孝路336巷9號'},
+  {n:'光復國民中小學',a:'臺中市霧峰區南柳里柳豐路535號'},
+  {n:'忠明高級中學',a:'臺中市西區博館路166號'},
+  {n:'東山高中',a:'臺中市北屯區景賢6路200號'},
+  {n:'豐原高中',a:'臺中市豐原區水源路150號'},
+  {n:'后綜高級中學',a:'臺中市后里區廣福里三豐路三段968號'},
+  {n:'神岡工業高中',a:'臺中市神岡區中山路627號'},
+  {n:'中港高級中學',a:'臺中市梧棲區文昌路400號'},
+  {n:'新社高級中學',a:'臺中市新社區復盛里中和街三段國中巷10號'},
+  {n:'長億高級中學',a:'臺中市太平區長億六街一號'},
+];
+
+function schoolSearch(){
+  const kw=document.getElementById('fs').value.trim();
+  const drop=document.getElementById('school-drop');
+  if(!kw){drop.style.display='none';return;}
+  const hits=SCHOOLS.filter(s=>s.n.includes(kw)||s.a.includes(kw)).slice(0,12);
+  if(!hits.length){drop.style.display='none';return;}
+  drop.innerHTML=hits.map(s=>`
+    <div onclick="pickSchool('${s.n}','${s.a}')" style="padding:10px 14px;cursor:pointer;border-bottom:0.5px solid #f0ede4;font-size:13px" onmouseover="this.style.background='#f8f8f6'" onmouseout="this.style.background='#fff'">
+      <div style="font-weight:600">${s.n}</div>
+      <div style="font-size:11px;color:#888;margin-top:2px">${s.a}</div>
+    </div>`).join('');
+  drop.style.display='block';
+}
+function pickSchool(name,addr){
+  document.getElementById('fs').value=name;
+  document.getElementById('fa').value=addr;
+  document.getElementById('school-drop').style.display='none';
+}
+function hideSchoolDrop(){
+  document.getElementById('school-drop').style.display='none';
+}
+
+function clearAll(){
+  if(!confirm('確定清除所有查詢條件與出差單資料？')) return;
+  // 清除已選老師
+  selT=[];
+  // 清除查詢日期與節次勾選
+  document.getElementById('qdate').value='';
+  document.getElementById('date-display').style.display='none';
+  PER.forEach(p=>{const el=document.getElementById('pc-'+p.id);if(el)el.checked=false;});
+  // 重設星期為週一
+  sd(1);
+  // 清除查詢結果
+  document.getElementById('qr').innerHTML='';
+  document.getElementById('selbox').style.display='none';
+  document.getElementById('seltags').innerHTML='';
+  // 清除出差單欄位
+  ['fd','fs','fa','ft','fav','fus','fue','fte'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  document.getElementById('fm').value='文宣內容：各校沿革、特色、辦學理念、師資陣容、地理環境、硬體設備、入學條件、畢業生就業或升學狀況...等。';
+  document.getElementById('ftr').value='老師開車前往（油料補助）';
+  document.getElementById('fn').value='如有困難，請立即知會招生處，以便另行安排';
+  document.getElementById('school-drop').style.display='none';
+}
+// ── 行事曆 ──
+let calEvents=[];
+let editCalId=null;
+const WEEK=['日','一','二','三','四','五','六'];
+
+function calSyncDay(){
+  const v=document.getElementById('cal-date').value;
+  if(!v){document.getElementById('cal-day').value='';return;}
+  const dt=new Date(v);
+  document.getElementById('cal-day').value='週'+WEEK[dt.getDay()];
+}
+
+function calSchoolSearch(){
+  const kw=document.getElementById('cal-school').value.trim();
+  const drop=document.getElementById('cal-school-drop');
+  if(!kw){drop.style.display='none';return;}
+  const hits=SCHOOLS.filter(s=>s.n.includes(kw)||s.a.includes(kw)).slice(0,10);
+  if(!hits.length){drop.style.display='none';return;}
+  drop.innerHTML=hits.map(s=>`
+    <div onclick="pickCalSchool('${s.n}')" style="padding:9px 13px;cursor:pointer;border-bottom:0.5px solid #f0ede4;font-size:13px" onmouseover="this.style.background='#f8f8f6'" onmouseout="this.style.background='#fff'">
+      <div style="font-weight:600">${s.n}</div>
+      <div style="font-size:11px;color:#888">${s.a}</div>
+    </div>`).join('');
+  drop.style.display='block';
+}
+function pickCalSchool(name){
+  document.getElementById('cal-school').value=name;
+  document.getElementById('cal-school-drop').style.display='none';
+}
+function hideCalDrop(){document.getElementById('cal-school-drop').style.display='none';}
+
+function buildCalTeacherPicker(){
+  const el=document.getElementById('cal-teacher-list');
+  el.innerHTML=T.map(t=>`
+    <label style="display:flex;align-items:center;gap:4px;padding:4px 8px;border:1px solid #d5d3ca;border-radius:20px;cursor:pointer;font-size:12px;background:#fff;user-select:none">
+      <input type="checkbox" id="ctp-${t.id}" style="margin:0;width:13px;height:13px"> ${t.name}
+    </label>`).join('');
+}
+
+function openCalAdd(){
+  editCalId=null;
+  document.getElementById('cal-title').textContent='新增宣導活動';
+  ['cal-date','cal-day','cal-time','cal-school','cal-type','cal-class','cal-people','cal-note'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  // 預設學期為當前篩選的學期
+  renderSemBtns();
+  const sel=document.getElementById('cal-sem');
+  if(sel) sel.value=(activeSem!=='all'?activeSem:(semesters[semesters.length-1]||''));
+  buildCalTeacherPicker();
+  document.getElementById('mc').classList.add('show');
+}
+
+function saveCal(){
+  const date=document.getElementById('cal-date').value;
+  const school=document.getElementById('cal-school').value.trim();
+  if(!date||!school){alert('請填寫日期與學校');return;}
+  const dt=new Date(date);
+  const roc=dt.getFullYear()-1911;
+  const m=String(dt.getMonth()+1).padStart(2,'0');
+  const d=String(dt.getDate()).padStart(2,'0');
+  const teachers=T.filter(t=>document.getElementById('ctp-'+t.id)?.checked).map(t=>t.name);
+  const ev={
+    id: editCalId||'ce'+Date.now(),
+    semester: document.getElementById('cal-sem').value,
+    date, dateStr:`${roc}/${m}/${d}`,
+    day: document.getElementById('cal-day').value,
+    time: document.getElementById('cal-time').value,
+    school,
+    type: document.getElementById('cal-type').value,
+    classNum: document.getElementById('cal-class').value,
+    people: document.getElementById('cal-people').value,
+    note: document.getElementById('cal-note').value,
+    teachers,
+  };
+  if(editCalId){
+    const idx=calEvents.findIndex(e=>e.id===editCalId);
+    if(idx>=0)calEvents[idx]=ev;
+  } else {
+    calEvents.push(ev);
+  }
+  sortCal();
+  document.getElementById('mc').classList.remove('show');
+  renderCal();
+}
+
+// 統一排序函數（依完整 ISO 日期，相同日期依學校名稱）
+// ── 老師課表匯入 ──
+const PER_IDS={
+  'am0':'am0','am1':'am1','am2':'am2','am3':'am3','am4':'am4',
+  'pm5':'pm5','pm6':'pm6','pm7':'pm7','pm8':'pm8',
+  '0':'am0','1':'am1','2':'am2','3':'am3','4':'am4',
+  '5':'pm5','6':'pm6','7':'pm7','8':'pm8',
+  '自主':'am0','自主學習':'am0',
+  '第1節':'am1','第2節':'am2','第3節':'am3','第4節':'am4',
+  '第5節':'pm5','第6節':'pm6','第7節':'pm7','第8節':'pm8',
+};
+
+function downloadTeacherTemplate(){
+  const BOM='\uFEFF';
+  const headers=['老師姓名','科目','星期(1=週一,6=週六)','節次代號','課程名稱','班級'];
+  const examples=[
+    ['王小明','數學','1','am1','數學A','高二1'],
+    ['王小明','數學','1','am2','數學A','高二1'],
+    ['王小明','數學','2','pm5','數學甲','高三1'],
+    ['王小明','數學','3','am3','應用數學','廣三2'],
+    ['李美玲','英語文','1','am1','英語文','多一1'],
+    ['李美玲','英語文','2','am3','旅遊英文','高三1'],
+    ['','','','','',''],
+    ['※ 節次代號說明','','','','',''],
+    ['am0=自主學習','am1=第1節08:00','am2=第2節09:00','am3=第3節10:00','am4=第4節11:00',''],
+    ['pm5=第5節13:00','pm6=第6節14:00','pm7=第7節15:00','pm8=第8節16:05','',''],
+    ['星期','1=週一','2=週二','3=週三','4=週四','5=週五 / 6=週六'],
+    ['注意','每個有課時段填一列','同一老師填多列','班級如「高一1」「廣三2」','',''],
+  ];
+  const rows=[headers,...examples].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(','));
+  const csv=BOM+rows.join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='大明高中老師課表範本.csv';
+  a.click();
+}
+
+function openTeacherImport(){
+  document.getElementById('ti-text').value='';
+  document.getElementById('ti-preview').style.display='none';
+  document.getElementById('mti').classList.add('show');
+}
+function closeTeacherImport(){
+  document.getElementById('mti').classList.remove('show');
+  document.getElementById('ti-text').value='';
+  document.getElementById('ti-preview').style.display='none';
+}
+
+function parseTeacherImport(raw){
+  const rows=raw.trim().split('\n').map(r=>r.split('\t').map(c=>c.trim()));
+  const dataRows=rows.filter(r=>{
+    if(!r[0])return false;
+    const h=r[0].toLowerCase();
+    return !h.includes('老師姓名')&&!h.includes('name')&&!h.startsWith('※')&&!h.startsWith('注意')&&!h.startsWith('am')&&!h.startsWith('pm')&&!h.startsWith('星期');
+  });
+  // 依老師姓名分組
+  const map={};
+  dataRows.forEach(r=>{
+    const name=(r[0]||'').trim();
+    const subject=(r[1]||'').trim();
+    const day=parseInt(r[2])||0;
+    const perRaw=(r[3]||'').trim().toLowerCase().replace(/\s/g,'');
+    const course=(r[4]||'').trim();
+    const cls=(r[5]||'').trim();
+    if(!name||!day||!perRaw)return;
+    const perId=PER_IDS[perRaw]||PER_IDS[r[3]]||null;
+    if(!perId)return;
+    if(!map[name]){map[name]={name,subject,schedule:{}};}
+    if(subject&&!map[name].subject) map[name].subject=subject;
+    const key=`${day}_${perId}`;
+    map[name].schedule[key]=`${course||subject}\n${cls}`;
+  });
+  return Object.values(map);
+}
+
+function previewTeacherImport(){
+  const raw=document.getElementById('ti-text').value;
+  if(!raw.trim()){alert('請先貼上資料');return;}
+  const parsed=parseTeacherImport(raw);
+  document.getElementById('ti-count').textContent=`解析到 ${parsed.length} 位老師，共 ${parsed.reduce((s,t)=>s+Object.keys(t.schedule).length,0)} 個課格`;
+  const dayNames=['','一','二','三','四','五','六'];
+  document.getElementById('ti-preview-table').innerHTML=`
+    <table style="width:100%;border-collapse:collapse">
+      <tr style="background:#f1efe8;font-weight:600">
+        <td style="padding:5px 8px;border:1px solid #e5e5e0">老師</td>
+        <td style="padding:5px 8px;border:1px solid #e5e5e0">科目</td>
+        <td style="padding:5px 8px;border:1px solid #e5e5e0">課格數</td>
+        <td style="padding:5px 8px;border:1px solid #e5e5e0">狀態</td>
+      </tr>
+      ${parsed.map(t=>{
+        const exists=T.find(x=>x.name===t.name);
+        return `<tr>
+          <td style="padding:5px 8px;border:1px solid #e5e5e0;font-weight:600">${t.name}</td>
+          <td style="padding:5px 8px;border:1px solid #e5e5e0">${t.subject}</td>
+          <td style="padding:5px 8px;border:1px solid #e5e5e0;text-align:center">${Object.keys(t.schedule).length}</td>
+          <td style="padding:5px 8px;border:1px solid #e5e5e0;font-size:11px;color:${exists?'#b85c00':'#3b6d11'}">${exists?'🔄 更新':'✨ 新增'}</td>
+        </tr>`;
+      }).join('')}
+    </table>`;
+  document.getElementById('ti-preview').style.display='block';
+}
+
+function doTeacherImport(){
+  const raw=document.getElementById('ti-text').value;
+  if(!raw.trim()){alert('請先貼上資料');return;}
+  const parsed=parseTeacherImport(raw);
+  if(!parsed.length){alert('解析不到有效資料，請確認格式');return;}
+  const mode=document.querySelector('input[name="ti-mode"]:checked').value;
+  if(mode==='replace'){
+    if(!confirm(`確定要清除所有 ${T.length} 位現有老師並重新匯入？`))return;
+    T.length=0;
+  }
+  let added=0,updated=0;
+  parsed.forEach(imp=>{
+    const idx=T.findIndex(x=>x.name===imp.name);
+    if(idx>=0){
+      T[idx].subject=imp.subject||T[idx].subject;
+      // 合併課表（匯入的覆蓋同一格）
+      T[idx].schedule=Object.assign({},T[idx].schedule,imp.schedule);
+      updated++;
+    } else {
+      T.push({id:'t'+Date.now()+Math.random(),name:imp.name,subject:imp.subject,schedule:imp.schedule});
+      added++;
+    }
+  });
+  closeTeacherImport();
+  rTL();
+  alert(`✅ 匯入完成！新增 ${added} 位 · 更新 ${updated} 位`);
+}
+
+// ── 學期管理 ──
+let semesters=['114學年第1學期','114學年第2學期'];
+let activeSem='all';
+
+function renderSemBtns(){
+  const container=document.getElementById('sem-btns');
+  if(!container)return;
+  container.innerHTML=semesters.map(s=>`
+    <button class="sb ${activeSem===s?'active':''}" onclick="filterSem('${s}')">${s}</button>
+  `).join('');
+  document.getElementById('sem-all').className='sb '+(activeSem==='all'?'active':'');
+  // 更新 modal 的 select
+  const sel=document.getElementById('cal-sem');
+  if(sel){
+    const cur=sel.value;
+    sel.innerHTML='<option value="">-- 選擇學期 --</option>'+semesters.map(s=>`<option value="${s}" ${cur===s?'selected':''}>${s}</option>`).join('');
+  }
+  // 管理學期清單
+  const sl=document.getElementById('sem-list');
+  if(sl){
+    sl.innerHTML=semesters.length?semesters.map((s,i)=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #e5e5e0;border-radius:8px;background:#fff">
+        <span style="font-size:13px;font-weight:500">${s}</span>
+        <div style="display:flex;gap:6px">
+          ${i>0?`<button class="btn-sm" onclick="moveSem(${i},-1)">↑</button>`:''}
+          ${i<semesters.length-1?`<button class="btn-sm" onclick="moveSem(${i},1)">↓</button>`:''}
+          <button class="btn-danger" onclick="delSem(${i})">刪除</button>
+        </div>
+      </div>`).join(''):'<p style="text-align:center;color:#888;font-size:13px;padding:1rem">尚無學期，請新增</p>';
+  }
+}
+
+function filterSem(sem){
+  activeSem=sem;
+  renderSemBtns();
+  renderCal();
+}
+
+function openSemManager(){
+  renderSemBtns();
+  document.getElementById('msem').classList.add('show');
+}
+
+function addSem(){
+  const v=document.getElementById('sem-new-input').value.trim();
+  if(!v){alert('請輸入學期名稱');return;}
+  if(semesters.includes(v)){alert('學期已存在');return;}
+  semesters.push(v);
+  document.getElementById('sem-new-input').value='';
+  renderSemBtns();
+}
+
+function delSem(i){
+  if(calEvents.some(e=>e.semester===semesters[i])){
+    if(!confirm(`「${semesters[i]}」底下還有活動，刪除學期後這些活動將變為未分類，確定？`))return;
+  }
+  semesters.splice(i,1);
+  renderSemBtns();
+}
+
+function moveSem(i,dir){
+  const j=i+dir;
+  if(j<0||j>=semesters.length)return;
+  [semesters[i],semesters[j]]=[semesters[j],semesters[i]];
+  renderSemBtns();
+}
+
+// ── 批次操作 ──
+let selectedIds=new Set();
+
+function toggleSemGroup(cb,ids){
+  ids.forEach(id=>{
+    if(cb.checked) selectedIds.add(id);
+    else selectedIds.delete(id);
+  });
+  // 更新個別 checkbox
+  document.querySelectorAll('.cal-row-check').forEach(b=>{
+    if(ids.includes(b.dataset.id)) b.checked=cb.checked;
+  });
+  updateBatchBar();
+}
+
+function updateBatchBar(){
+  const bar=document.getElementById('batch-bar');
+  const n=selectedIds.size;
+  if(n===0){
+    bar.style.display='none';
+    const ca=document.getElementById('check-all');
+    if(ca) ca.checked=false;
+  } else {
+    bar.style.display='flex';
+    document.getElementById('batch-count').textContent=`已選取 ${n} 筆活動`;
+  }
+}
+
+function toggleCalRow(id,checked){
+  if(checked) selectedIds.add(id);
+  else selectedIds.delete(id);
+  updateBatchBar();
+  // 更新全選框狀態
+  const allBoxes=document.querySelectorAll('.cal-row-check');
+  const ca=document.getElementById('check-all');
+  if(ca&&allBoxes.length>0){
+    ca.checked=[...allBoxes].every(b=>b.checked);
+    ca.indeterminate=[...allBoxes].some(b=>b.checked)&&![...allBoxes].every(b=>b.checked);
+  }
+}
+
+function toggleAllCal(checked){
+  document.querySelectorAll('.cal-row-check').forEach(b=>{
+    b.checked=checked;
+    if(checked) selectedIds.add(b.dataset.id);
+    else selectedIds.delete(b.dataset.id);
+  });
+  document.getElementById('check-all').indeterminate=false;
+  updateBatchBar();
+}
+
+function clearSelection(){
+  selectedIds.clear();
+  document.querySelectorAll('.cal-row-check').forEach(b=>b.checked=false);
+  const ca=document.getElementById('check-all');
+  if(ca){ca.checked=false;ca.indeterminate=false;}
+  updateBatchBar();
+}
+
+function batchDelete(){
+  if(!selectedIds.size){alert('請先勾選要刪除的活動');return;}
+  if(!confirm(`確定刪除選取的 ${selectedIds.size} 筆活動？此操作無法還原`))return;
+  calEvents=calEvents.filter(e=>!selectedIds.has(e.id));
+  selectedIds.clear();
+  renderCal();
+  updateBatchBar();
+}
+
+function batchChangeSem(){
+  if(!selectedIds.size){alert('請先勾選要變更的活動');return;}
+  const sel=document.getElementById('batch-sem-select');
+  sel.innerHTML=semesters.map(s=>`<option value="${s}">${s}</option>`).join('');
+  document.getElementById('batch-sem-desc').textContent=`已選取 ${selectedIds.size} 筆活動`;
+  document.getElementById('mbatch').classList.add('show');
+}
+
+function doBatchChangeSem(){
+  const target=document.getElementById('batch-sem-select').value;
+  if(!target)return;
+  calEvents.forEach(e=>{if(selectedIds.has(e.id))e.semester=target;});
+  document.getElementById('mbatch').classList.remove('show');
+  selectedIds.clear();
+  sortCal();
+  renderCal();
+  updateBatchBar();
+}
+
+function sortCal(){
+  calEvents.sort((a,b)=>{
+    const da=a.date||'9999-99-99', db=b.date||'9999-99-99';
+    if(da!==db) return da.localeCompare(db);
+    return (a.school||'').localeCompare(b.school||'');
+  });
+}
+
+function renderCal(){
+  const tbody=document.getElementById('cal-body');
+  if(!calEvents.length){
+    tbody.innerHTML='<tr><td colspan="12" style="text-align:center;padding:2rem;color:#888">尚無活動，點右上角新增或使用「貼上匯入」</td></tr>';
+    return;
+  }
+  const filtered=activeSem==='all'?calEvents:calEvents.filter(e=>e.semester===activeSem);
+  if(!filtered.length){
+    tbody.innerHTML=`<tr><td colspan="12" style="text-align:center;padding:2rem;color:#888">「${activeSem}」尚無活動</td></tr>`;
+    return;
+  }
+  const semOrder={};
+  semesters.forEach((s,i)=>semOrder[s]=i);
+  const grouped={};
+  filtered.forEach(ev=>{
+    const sem=ev.semester||'未分類';
+    if(!grouped[sem])grouped[sem]=[];
+    grouped[sem].push(ev);
+  });
+  const sortedSems=Object.keys(grouped).sort((a,b)=>{
+    const ia=semOrder[a]??999, ib=semOrder[b]??999;
+    return ia-ib;
+  });
+  const semColors=['#1a3a6b','#3b6d11','#7a3b00','#4a1a6b','#006b5a'];
+  let html='';
+  sortedSems.forEach((sem,si)=>{
+    const color=semColors[si%semColors.length];
+    const semEvIds=grouped[sem].map(e=>e.id);
+    html+=`<tr>
+      <td style="background:${color};padding:7px 8px;border:1px solid ${color}">
+        <input type="checkbox" onchange="toggleSemGroup(this,${JSON.stringify(semEvIds)})"
+          style="width:14px;height:14px;cursor:pointer;filter:invert(1)" class="sem-group-check" data-sem="${sem}">
+      </td>
+      <td colspan="11" style="background:${color};color:#fff;padding:7px 10px;font-size:12px;font-weight:600;letter-spacing:1px">📅 ${sem}</td>
+    </tr>`;
+    grouped[sem].forEach(ev=>{
+      const isSel=selectedIds.has(ev.id);
+      html+=`<tr style="border-bottom:1px solid #e5e5e0;background:${isSel?'#eef5ff':'#fff'}">
+        <td style="padding:8px 8px;border:1px solid #e5e5e0;text-align:center">
+          <input type="checkbox" class="cal-row-check" data-id="${ev.id}"
+            ${isSel?'checked':''} onchange="toggleCalRow('${ev.id}',this.checked)"
+            style="width:15px;height:15px;cursor:pointer">
+        </td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0;white-space:nowrap">
+          <span style="font-size:11px;padding:2px 7px;border-radius:10px;background:${color}22;color:${color};border:1px solid ${color}55">${ev.semester||'未分類'}</span>
+        </td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0;white-space:nowrap;font-weight:600">${ev.dateStr}</td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0;text-align:center">${ev.day}</td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0;white-space:nowrap">${ev.time||'—'}</td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0;font-weight:500">${ev.school}</td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0">${ev.type||'—'}</td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0;text-align:center">${ev.classNum||'—'}</td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0;text-align:center">${ev.people||'—'}</td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0">${ev.note||'—'}</td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0">${ev.teachers.length?ev.teachers.join('、'):'—'}</td>
+        <td style="padding:8px 8px;border:1px solid #e5e5e0;white-space:nowrap">
+          <div style="display:flex;gap:4px">
+            <button class="btn-sm" onclick="calToExportFromRow('${ev.id}')">填出差單</button>
+            <button class="btn-sm" onclick="editCal('${ev.id}')">編輯</button>
+            <button class="btn-danger" onclick="delCal('${ev.id}')">刪除</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML=html;
+  // 還原勾選狀態後更新全選框
+  const ca=document.getElementById('check-all');
+  const allBoxes=document.querySelectorAll('.cal-row-check');
+  if(ca&&allBoxes.length>0){
+    ca.checked=[...allBoxes].every(b=>b.checked);
+    ca.indeterminate=[...allBoxes].some(b=>b.checked)&&![...allBoxes].every(b=>b.checked);
+  }
+}
+
+function editCal(id){
+  const ev=calEvents.find(e=>e.id===id);if(!ev)return;
+  editCalId=id;
+  document.getElementById('cal-title').textContent='編輯宣導活動';
+  document.getElementById('cal-date').value=ev.date;
+  document.getElementById('cal-day').value=ev.day;
+  document.getElementById('cal-time').value=ev.time;
+  document.getElementById('cal-school').value=ev.school;
+  document.getElementById('cal-type').value=ev.type;
+  document.getElementById('cal-class').value=ev.classNum;
+  document.getElementById('cal-people').value=ev.people;
+  document.getElementById('cal-note').value=ev.note;
+  renderSemBtns();
+  const sel=document.getElementById('cal-sem');
+  if(sel) sel.value=ev.semester||'';
+  buildCalTeacherPicker();
+  ev.teachers.forEach(name=>{
+    const t=T.find(x=>x.name===name);
+    if(t){const el=document.getElementById('ctp-'+t.id);if(el)el.checked=true;}
+  });
+  document.getElementById('mc').classList.add('show');
+}
+
+function delCal(id){
+  if(!confirm('確定刪除此活動？'))return;
+  calEvents=calEvents.filter(e=>e.id!==id);
+  renderCal();
+}
+
+function calToExport(){
+  // 從 modal 填入出差單
+  const school=document.getElementById('cal-school').value;
+  const addr=(SCHOOLS.find(s=>s.n===school)||{}).a||'';
+  const teachers=T.filter(t=>document.getElementById('ctp-'+t.id)?.checked).map(t=>t.name+'老師').join('、');
+  document.getElementById('fd').value=document.getElementById('cal-date').value;
+  document.getElementById('fs').value=school;
+  document.getElementById('fa').value=addr;
+  document.getElementById('ft').value=document.getElementById('cal-type').value;
+  document.getElementById('fte').value=teachers;
+  const time=document.getElementById('cal-time').value;
+  if(time&&time.includes('～')){
+    const parts=time.split('～');
+    document.getElementById('fus').value=parts[0].trim();
+    document.getElementById('fue').value=parts[1].trim();
+  }
+  document.getElementById('mc').classList.remove('show');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab')[2].classList.add('active');
+  document.getElementById('page-export').classList.add('active');
+  document.getElementById('float-print').style.display='flex';
+}
+
+function calToExportFromRow(id){
+  const ev=calEvents.find(e=>e.id===id);if(!ev)return;
+  const addr=(SCHOOLS.find(s=>s.n===ev.school)||{}).a||'';
+  document.getElementById('fd').value=ev.date;
+  document.getElementById('fs').value=ev.school;
+  document.getElementById('fa').value=addr;
+  document.getElementById('ft').value=ev.type;
+  document.getElementById('fte').value=ev.teachers.map(n=>n.endsWith('老師')?n:n+'老師').join('、');
+  if(ev.time&&ev.time.includes('～')){
+    const parts=ev.time.split('～');
+    document.getElementById('fus').value=parts[0].trim();
+    document.getElementById('fue').value=parts[1].trim();
+  }
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab')[2].classList.add('active');
+  document.getElementById('page-export').classList.add('active');
+  document.getElementById('float-print').style.display='flex';
+}
+
+function downloadTemplate(){
+  // 產生 CSV 範本（Excel 可直接開啟）
+  const BOM='\uFEFF'; // 讓 Excel 正確顯示中文
+  const headers=['日期','星期','時間','學校','活動類型','班級數','人數','備註','指派老師'];
+  const examples=[
+    ['5月18日','一','14:00～16:00','大墩國民中學','博覽會','10班','230','',''],
+    ['5月19日','二','13:30～16:20','豐南國民中學','入班宣導','16班','385','派8人','黃文麗、廖柏宇'],
+    ['5月20日','三','','向上國民中學','來校參訪','14班','405','1輛車',''],
+    ['','','','','','','','',''],
+    ['※ 說明','','','','','','','',''],
+    ['日期','填寫格式如「5月18日」或「5/18」','','','','','','',''],
+    ['星期','填一二三四五六（系統會自動帶入，可不填）','','','','','','',''],
+    ['時間','格式如「14:00～16:20」，若無可留空','','','','','','',''],
+    ['學校','請填完整學校名稱，系統會自動比對地址','','','','','','',''],
+    ['指派老師','填姓名，多位以頓號「、」分隔，如「黃文麗、廖柏宇」','','','','','','',''],
+  ];
+  const rows=[headers,...examples].map(r=>r.map(c=>`"${c}"`).join(','));
+  const csv=BOM+rows.join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='大明高中宣導行事曆範本.csv';
+  a.click();
+}
+
+function openImport(){
+  document.getElementById('import-text').value='';
+  document.getElementById('import-preview').style.display='none';
+  document.getElementById('mi').classList.add('show');
+}
+
+function parseImportText(raw){
+  const rows=raw.trim().split('\n').map(r=>r.split('\t').map(c=>c.trim()));
+  // 跳過標題列
+  const dataRows=rows.filter(r=>{
+    if(!r[0])return false;
+    const h=r[0].toLowerCase();
+    return !h.includes('日期')&&!h.includes('date');
+  });
+  return dataRows.map(r=>{
+    const dateRaw=r[0]||'';
+    // 解析日期：支援「5月18日」「5/18」「5/19 / 5/25」等格式
+    let dateStr=dateRaw;
+    // 取第一個日期（含「/」分隔的多日期只取第一個）
+    const firstDate=dateRaw.split('/')[0].replace(/\s/g,'').split('、')[0];
+    // 轉換「5月18日」→ 格式化字串
+    const mDay=firstDate.match(/(\d+)[月\/](\d+)/);
+    let isoDate='';
+    if(mDay){
+      const m=String(mDay[1]).padStart(2,'0');
+      const d=String(mDay[2]).padStart(2,'0');
+      // 自動判斷年份：若月份已過當前月份，視為下一年
+      const now=new Date();
+      let yr=now.getFullYear();
+      if(parseInt(mDay[1])<now.getMonth()+1) yr++;
+      isoDate=`${yr}-${m}-${d}`;
+      dateStr=`${mDay[1]}月${parseInt(mDay[2])}日`;
+    }
+    const day=r[1]||'';
+    const dayStr=day?'週'+day.replace(/週/g,'').replace(/\s.*/,''):'';
+    // 指派老師：嘗試比對課表老師名字
+    const teacherRaw=(r[8]||'').split(/[、,，]/).map(s=>s.trim()).filter(Boolean);
+    const matchedTeachers=teacherRaw.map(raw=>{
+      // 去掉「老師」後綴再比對
+      const name=raw.replace(/老師$/,'').trim();
+      const found=T.find(t=>t.name===name||t.name===raw||name.includes(t.name)||t.name.includes(name));
+      return found?found.name:raw;
+    });
+    return {
+      id:'ce'+Date.now()+Math.random(),
+      semester: activeSem!=='all'?activeSem:(semesters[semesters.length-1]||''),
+      date:isoDate,
+      dateStr:dateRaw,
+      day:dayStr,
+      time:r[2]||'',
+      school:r[3]||'',
+      type:r[4]||'',
+      classNum:r[5]||'',
+      people:r[6]||'',
+      note:r[7]||'',
+      teachers:matchedTeachers,
+    };
+  }).filter(r=>r.school);
+}
+
+function previewImport(){
+  const raw=document.getElementById('import-text').value;
+  if(!raw.trim()){alert('請先貼上資料');return;}
+  const parsed=parseImportText(raw);
+  const prev=document.getElementById('import-preview');
+  document.getElementById('import-count').textContent=`解析到 ${parsed.length} 筆活動，確認無誤後點「確認匯入」`;
+  document.getElementById('import-preview-table').innerHTML=`
+    <table style="width:100%;border-collapse:collapse">
+      <tr style="background:#f1efe8;font-weight:600">
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">日期</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">學校</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">活動類型</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">班級數</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">備註</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">指派老師</td>
+      </tr>
+      ${parsed.map(r=>`<tr>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0;white-space:nowrap">${r.dateStr} ${r.day}</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">${r.school}</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">${r.type}</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">${r.classNum}</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0">${r.note}</td>
+        <td style="padding:5px 7px;border:1px solid #e5e5e0;color:${r.teachers.length?'#3b6d11':'#aaa'}">${r.teachers.length?r.teachers.join('、'):'—'}</td>
+      </tr>`).join('')}
+    </table>`;
+  prev.style.display='block';
+}
+
+function doImport(){
+  const raw=document.getElementById('import-text').value;
+  if(!raw.trim()){alert('請先貼上資料');return;}
+  const parsed=parseImportText(raw);
+  if(!parsed.length){alert('解析不到有效資料，請確認格式');return;}
+  calEvents=[...calEvents,...parsed];
+  sortCal();
+  document.getElementById('mi').classList.remove('show');
+  document.getElementById('import-text').value='';
+  document.getElementById('import-preview').style.display='none';
+  renderCal();
+  alert(`✅ 成功匯入 ${parsed.length} 筆活動！`);
+}
+
+function rTL(){
+  const n=T.length;
+  document.getElementById('tc').textContent=n;
+  document.getElementById('tc2').textContent=n;
+  const el=document.getElementById('tlist');
+  if(!T.length){el.innerHTML='<div class="es">尚未新增老師</div>';return;}
+  const kw=(document.getElementById('search-teacher')?.value||'').trim().toLowerCase();
+  const filtered=kw?T.filter(t=>t.name.toLowerCase().includes(kw)||t.subject.toLowerCase().includes(kw)):T;
+  if(!filtered.length){el.innerHTML=`<div class="es">找不到「${kw}」相關老師</div>`;return;}
+  el.innerHTML=filtered.map(t=>`<div class="ti">
+    <div>
+      <div style="font-size:14px;font-weight:600">${t.name} 老師</div>
+      <div style="font-size:12px;color:#888;margin-top:2px">${t.subject}・${Object.keys(t.schedule).length} 個有課時段</div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn-sm" onclick="oV('${t.id}')">查看課表</button>
+      <button class="btn-sm" onclick="oE('${t.id}')">編輯</button>
+      <button class="btn-danger" onclick="dT('${t.id}')">刪除</button>
+    </div>
+  </div>`).join('');
+}
+function bG(cid,sc,ed){
+  const g=document.getElementById(cid);g.innerHTML='';
+  const h0=document.createElement('div');h0.className='sg-h';g.appendChild(h0);
+  DAYS.forEach(d=>{const c=document.createElement('div');c.className='sg-h';c.textContent='週'+d;g.appendChild(c);});
+  PER.forEach(p=>{
+    const tc=document.createElement('div');tc.className='sg-t';tc.innerHTML=p.label+'<br><span style="font-size:9px">'+p.time.split('-')[0]+'</span>';g.appendChild(tc);
+    for(let di=0;di<6;di++){
+      const key=`${di+1}_${p.id}`;const val=sc[key]||'';
+      const cell=document.createElement('div');cell.className='sg-c '+(val?'busy':'empty');
+      if(val){const pts=val.split('\n');cell.innerHTML=`<div class="ct">${pts[0]}<br><span class="cc">${pts[1]||''}</span></div>`;}
+      if(ed){
+        cell.style.cursor='pointer';
+        cell.onclick=()=>{
+          const sub=document.getElementById('esu').value||'有課';
+          if(editSch[key]){delete editSch[key];cell.className='sg-c empty';cell.innerHTML='';}
+          else{editSch[key]=sub+'\n';cell.className='sg-c busy';cell.innerHTML=`<div class="ct">${sub}</div>`;}
+        };
+      }
+      g.appendChild(cell);
+    }
+  });
+}
+function oV(id){
+  const t=T.find(x=>x.id===id);
+  document.getElementById('vt').textContent=t.name+' 老師課表（'+t.subject+'）';
+  bG('vg',t.schedule,false);
+  document.getElementById('mv').classList.add('show');
+}
+function openAdd(){
+  editId=null;editSch={};
+  document.getElementById('en').value='';document.getElementById('esu').value='';
+  document.getElementById('et').textContent='新增老師';
+  bG('eg',editSch,true);
+  document.getElementById('me').classList.add('show');
+}
+function oE(id){
+  const t=T.find(x=>x.id===id);
+  editId=id;editSch=JSON.parse(JSON.stringify(t.schedule));
+  document.getElementById('en').value=t.name;document.getElementById('esu').value=t.subject;
+  document.getElementById('et').textContent='編輯：'+t.name+'老師';
+  bG('eg',editSch,true);
+  document.getElementById('me').classList.add('show');
+}
+function savT(){
+  const n=document.getElementById('en').value.trim(),s=document.getElementById('esu').value.trim();
+  if(!n){alert('請輸入姓名');return;}
+  if(editId){const t=T.find(x=>x.id===editId);t.name=n;t.subject=s;t.schedule=JSON.parse(JSON.stringify(editSch));}
+  else T.push({id:'t'+Date.now(),name:n,subject:s,schedule:JSON.parse(JSON.stringify(editSch))});
+  document.getElementById('me').classList.remove('show');rTL();
+}
+function dT(id){if(!confirm('確定刪除這位老師？'))return;T=T.filter(x=>x.id!==id);rTL();}
+
+function tSel(id){const i=selT.indexOf(id);if(i>=0)selT.splice(i,1);else selT.push(id);rq();}
+function uSB(){
+  const b=document.getElementById('selbox');
+  if(!selT.length){b.style.display='none';return;}
+  b.style.display='block';
+  document.getElementById('seltags').innerHTML=selT.map(id=>{const t=T.find(x=>x.id===id);return t?`<span class="tag">${t.name} 老師</span>`:''}).join('');
+}
+function goExp(){
+  const names=selT.map(id=>{const t=T.find(x=>x.id===id);return t?t.name+'老師':'';}).filter(Boolean).join('、');
+  document.getElementById('fte').value=names;
+  // 日期已在 syncDayFromDate 時同步，這裡確保再帶一次
+  const qd=document.getElementById('qdate').value;
+  if(qd) document.getElementById('fd').value=qd;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab')[2].classList.add('active');
+  document.getElementById('page-export').classList.add('active');
+}
+
+function fmtDate(dv){
+  if(!dv)return '';
+  const dt=new Date(dv);
+  const roc=dt.getFullYear()-1911;
+  const m=String(dt.getMonth()+1).padStart(2,'0');
+  const d=String(dt.getDate()).padStart(2,'0');
+  const w=['日','一','二','三','四','五','六'][dt.getDay()];
+  return `${roc} 年 ${m} 月 ${d} 日（週${w}）`;
+}
+function printExp(){
+  const g=v=>document.getElementById(v).value;
+  const ut=g('fus')&&g('fue')?g('fus')+'～'+g('fue'):'';
+  const dateStr=fmtDate(g('fd'));
+  const school=g('fs')+(g('fa')?'　（'+g('fa')+'）':'');
+  const teachers=g('fte');
+  const method=g('fm').replace(/\n/g,'<br>');
+  const note=g('fn').replace(/\n/g,'<br>');
+
+  const rows=[
+    ['日　　期', dateStr],
+    ['宣導學校', school],
+    ['宣導性質', g('ft')],
+    ['到達時間', g('fav')],
+    ['使用時間', `<span style="color:#c00;font-weight:bold">${ut}</span>`],
+    ['宣　導\n人　員', `宣導教師：${teachers}<br><br><strong>實施方式：${method}</strong>`],
+    ['交　　通', g('ftr')],
+    ['補充事項', '1、　'+note],
+  ];
+
+  const tableRows=rows.map(([label,val])=>`
+    <tr>
+      <td style="width:80px;text-align:center;vertical-align:middle;padding:10px 8px;border:1px solid #333;font-size:14px;white-space:pre-line;background:#f5f5f5;font-weight:bold">${label}</td>
+      <td style="padding:10px 14px;border:1px solid #333;font-size:14px;line-height:1.8;vertical-align:middle">${val||'&nbsp;'}</td>
+    </tr>`).join('');
+
+  const html=`<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>大明高中宣導預訂行程表</title>
+<style>
+  @page { size: A4; margin: 18mm 18mm 18mm 18mm; }
+  @media print { body { margin:0; } .no-print { display:none; } }
+  body { font-family:'Microsoft JhengHei','Noto Sans TC',sans-serif; background:#fff; color:#000; margin:0; padding:20px; }
+  .page { width:210mm; min-height:270mm; margin:0 auto; padding:10mm; }
+  .school-header { display:flex; align-items:center; justify-content:center; margin-bottom:18px; gap:16px; }
+  .school-logo { width:52px; height:52px; border-radius:50%; background:#1a3a6b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:bold; text-align:center; flex-shrink:0; line-height:1.3; }
+  .title { font-size:20px; font-weight:bold; text-align:center; letter-spacing:2px; }
+  table { width:100%; border-collapse:collapse; margin-top:8px; }
+  .print-btn { position:fixed; bottom:24px; right:24px; background:#1a1a1a; color:#fff; border:none; padding:12px 20px; border-radius:50px; font-size:15px; cursor:pointer; font-family:inherit; box-shadow:0 2px 12px rgba(0,0,0,0.25); }
+  .print-btn:hover { background:#333; }
+  .sign-row { display:flex; justify-content:flex-end; gap:60px; margin-top:28px; font-size:14px; }
+  .sign-item { text-align:center; }
+  .sign-line { border-bottom:1px solid #333; width:100px; margin:0 auto; height:30px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="school-header">
+    <div class="school-logo">大明<br>高中</div>
+    <div class="title">大明高中宣導預訂行程表</div>
+  </div>
+  <table>${tableRows}</table>
+  <div class="sign-row">
+    <div class="sign-item"><div class="sign-line"></div><div style="margin-top:6px">承辦人</div></div>
+    <div class="sign-item"><div class="sign-line"></div><div style="margin-top:6px">組　長</div></div>
+    <div class="sign-item"><div class="sign-line"></div><div style="margin-top:6px">主任核准</div></div>
+  </div>
+</div>
+<button class="print-btn no-print" onclick="window.print()">🖨️ 列印</button>
+</body>
+</html>`;
+
+  const win=window.open('','_blank','width=900,height=750');
+  win.document.write(html);
+  win.document.close();
+}
+
+rTL();
+buildPeriodChecks();
+renderSemBtns();
+</script>
+</body>
+</html>
