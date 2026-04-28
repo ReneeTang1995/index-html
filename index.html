@@ -147,12 +147,32 @@ button{cursor:pointer;font-family:inherit}
   </div>
 
   <!-- 學期篩選 -->
-  <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:.875rem">
+  <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:.75rem">
     <span style="font-size:12px;color:#666">學期：</span>
     <button class="sb active" id="sem-all" onclick="filterSem('all')">全部</button>
     <div id="sem-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
     <button onclick="openSemMgr()" style="padding:4px 10px;border:1px dashed #d5d3ca;border-radius:20px;background:none;font-size:11px;color:#888;cursor:pointer">⚙️ 管理</button>
   </div>
+
+  <!-- 日期搜尋 -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:.875rem;padding:10px 14px;background:#fff;border:1px solid #e5e3dc;border-radius:9px">
+    <span style="font-size:12px;color:#666;white-space:nowrap">日期篩選：</span>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:1">
+      <input type="date" id="cal-date-from" oninput="applyDateFilter()" style="width:140px;margin-bottom:0;font-size:12px;padding:5px 8px">
+      <span style="font-size:12px;color:#888">～</span>
+      <input type="date" id="cal-date-to" oninput="applyDateFilter()" style="width:140px;margin-bottom:0;font-size:12px;padding:5px 8px">
+      <input type="text" id="cal-kw" placeholder="🔍 搜尋學校、活動類型、備註…" oninput="applyDateFilter()" style="flex:1;min-width:180px;margin-bottom:0;font-size:12px;padding:5px 8px">
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="sb" id="dq-today" onclick="setDateQuick('today')">今天</button>
+      <button class="sb" id="dq-week" onclick="setDateQuick('week')">本週</button>
+      <button class="sb" id="dq-month" onclick="setDateQuick('month')">本月</button>
+      <button onclick="clearDateFilter()" style="padding:4px 10px;border:1px solid #d5d3ca;border-radius:20px;background:none;font-size:11px;color:#888;cursor:pointer">✕ 清除</button>
+    </div>
+  </div>
+
+  <!-- 篩選結果提示 -->
+  <div id="filter-info" style="display:none;font-size:12px;color:#185fa5;margin-bottom:8px;padding:5px 10px;background:#e6f1fb;border-radius:6px"></div>
 
   <!-- 批次操作列 -->
   <div class="batch-bar" id="batch-bar">
@@ -234,15 +254,30 @@ button{cursor:pointer;font-family:inherit}
      PAGE 3: 老師課表
 ═══════════════════════════════════ -->
 <div class="page" id="page-teachers">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem;flex-wrap:wrap;gap:8px">
     <h2 style="margin:0">老師課表（<span id="tc">33</span> 位）</h2>
-    <div style="display:flex;gap:7px">
-      <button class="bo" onclick="dlTeacherCSV()" style="font-size:12px">⬇️ 下載課表</button>
-      <button class="bo" onclick="openTImport()" style="font-size:12px">📥 批次匯入</button>
-      <button class="bp" onclick="openTAdd()">＋ 新增老師</button>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+      <!-- 一般模式 -->
+      <div id="t-default-ops" style="display:flex;gap:7px">
+        <button class="bo" onclick="dlTeacherCSV()" style="font-size:12px">⬇️ 下載課表</button>
+        <button class="bo" onclick="openTImport()" style="font-size:12px">📥 批次匯入</button>
+        <button class="bo" onclick="enterTBatchMode()" style="font-size:12px">☑️ 批次修改</button>
+        <button class="bp" onclick="openTAdd()">＋ 新增老師</button>
+      </div>
+      <!-- 批次模式 -->
+      <div id="t-batch-ops" style="display:none;gap:6px;flex-wrap:wrap;align-items:center">
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:5px 10px;border:1px solid #d5d3ca;border-radius:7px;background:#fff">
+          <input type="checkbox" id="t-check-all" onchange="toggleAllT(this.checked)" style="width:14px;height:14px;cursor:pointer">
+          全選
+        </label>
+        <span id="t-batch-count" style="font-size:12px;font-weight:600;color:#185fa5"></span>
+        <button onclick="dlSelTeachers()" class="bo" style="font-size:12px">⬇️ 下載選取</button>
+        <button onclick="batchDelT()" style="font-size:12px;padding:5px 12px;background:#fff;border:1px solid #f09595;border-radius:7px;color:#a32d2d;cursor:pointer;font-family:inherit">🗑️ 批次刪除</button>
+        <button onclick="exitTBatchMode()" class="bo" style="font-size:12px">✕ 結束批次</button>
+      </div>
     </div>
   </div>
-  <div style="position:relative;margin-bottom:.875rem">
+  <div style="margin-bottom:.75rem">
     <input type="text" id="t-search" placeholder="🔍 搜尋老師姓名或科目…" oninput="renderTL()">
   </div>
   <div id="t-list"></div>
@@ -626,37 +661,37 @@ const SCHOOLS=[
 ];
 
 let calEvents=[
-  {id:'ce001',semester:'115-2',date:'2026-05-18',dateStr:'5月18日',day:'週一',time:'7:35-8:10',school:'大業國民中學',type:'入班宣導',classNum:'18班',people:'590',note:'派9人',teachers:[]},
-  {id:'ce002',semester:'115-2',date:'2026-05-18',dateStr:'5月18日',day:'週一',time:'14:00-16:00',school:'大業國民中學',type:'博覽會',classNum:'18班',people:'590',note:'',teachers:[]},
-  {id:'ce003',semester:'115-2',date:'2026-05-18',dateStr:'5月18日',day:'週一',time:'下午',school:'大墩國民中學',type:'來校參訪',classNum:'10班',people:'230',note:'',teachers:[]},
-  {id:'ce004',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'13:20-15:00',school:'中平國民中學',type:'博覽會',classNum:'-',people:'229',note:'',teachers:[]},
-  {id:'ce005',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'09:10-11:50',school:'光明國民中學',type:'博覽會',classNum:'14班',people:'310',note:'',teachers:[]},
-  {id:'ce006',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'11:00-12:00',school:'后里國民中學',type:'入班宣導',classNum:'6',people:'-',note:'需派3位',teachers:[]},
-  {id:'ce007',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'上午',school:'安和國民中學',type:'校園參訪',classNum:'11班',people:'225',note:'6車',teachers:[]},
-  {id:'ce008',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'13:00-15:30',school:'新社高級中學',type:'博覽會',classNum:'5班',people:'117',note:'',teachers:[]},
-  {id:'ce009',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'09:00-11:00',school:'漢口國民中學',type:'博覽會',classNum:'10班',people:'254',note:'',teachers:[]},
-  {id:'ce010',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',time:'09:20-10:05',school:'豐南國民中學',type:'入班宣導',classNum:'16班',people:'385',note:'派8人',teachers:[]},
-  {id:'ce011',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'08:25-11:00',school:'光榮國民中學',type:'博覽會',classNum:'-',people:'400',note:'',teachers:[]},
-  {id:'ce012',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'13:30-16:10',school:'向上國民中學',type:'博覽會',classNum:'14班',people:'405',note:'',teachers:[]},
-  {id:'ce013',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'09:00-12:00',school:'西苑高中',type:'博覽會',classNum:'14班',people:'373',note:'',teachers:[]},
-  {id:'ce014',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'13:10-14:50',school:'崇倫國民中學',type:'博覽會',classNum:'10班',people:'256',note:'',teachers:[]},
-  {id:'ce015',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'上午',school:'潭子國民中學',type:'來校參訪',classNum:'-',people:'-',note:'1輛車',teachers:[]},
-  {id:'ce016',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',time:'15:10-15:55',school:'豐陽國民中學',type:'設計講座',classNum:'7班',people:'161',note:'佩佩老師',teachers:[]},
-  {id:'ce017',semester:'115-2',date:'2026-05-21',dateStr:'5月21日',day:'週四',time:'13:15-14:00',school:'光德國民中學',type:'入班宣導',classNum:'13班',people:'373',note:'派7人',teachers:[]},
-  {id:'ce018',semester:'115-2',date:'2026-05-21',dateStr:'5月21日',day:'週四',time:'下午',school:'神岡國民中學',type:'來校參訪',classNum:'7班',people:'181',note:'',teachers:[]},
-  {id:'ce019',semester:'115-2',date:'2026-05-21',dateStr:'5月21日',day:'週四',time:'15:10-15:55',school:'豐陽國民中學',type:'入班宣導',classNum:'7班',people:'161',note:'派4人',teachers:[]},
-  {id:'ce020',semester:'115-2',date:'2026-05-22',dateStr:'5月22日',day:'週五',time:'09:15-10:55',school:'立人國民中學',type:'博覽會',classNum:'7班',people:'190',note:'',teachers:[]},
-  {id:'ce021',semester:'115-2',date:'2026-05-25',dateStr:'5月25日',day:'週一',time:'11:00-12:00',school:'大雅國民中學',type:'入班宣導',classNum:'13班',people:'390',note:'派5人',teachers:[]},
-  {id:'ce022',semester:'115-2',date:'2026-05-25',dateStr:'5月25日',day:'週一',time:'15:00-15:50',school:'烏日國民中學',type:'入班宣導',classNum:'5班',people:'105',note:'派3人',teachers:[]},
-  {id:'ce023',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',time:'14:00-15:00',school:'大里高中',type:'博覽會',classNum:'6班',people:'140',note:'',teachers:[]},
-  {id:'ce024',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',time:'14:20-16:00',school:'沙鹿國民中學',type:'博覽會',classNum:'18班',people:'502',note:'',teachers:[]},
-  {id:'ce025',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',time:'上午',school:'東山高中',type:'來校參訪',classNum:'6班',people:'190',note:'',teachers:[]},
-  {id:'ce026',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',time:'14:00-16:00',school:'新光國民中學',type:'體驗活動',classNum:'-',people:'-',note:'美工科・文麗老師',teachers:['黃文麗']},
-  {id:'ce027',semester:'115-2',date:'2026-05-27',dateStr:'5月27日',day:'週三',time:'13:15-15:15',school:'崇德國民中學',type:'博覽會',classNum:'-',people:'434',note:'',teachers:[]},
-  {id:'ce028',semester:'115-2',date:'2026-05-27',dateStr:'5月27日',day:'週三',time:'10:10-10:55',school:'豐原國民中學',type:'入班宣導',classNum:'12班',people:'290',note:'派6人',teachers:[]},
-  {id:'ce029',semester:'115-2',date:'2026-05-29',dateStr:'5月29日',day:'週五',time:'上午',school:'北新國民中學',type:'來校參訪',classNum:'13班',people:'567',note:'',teachers:[]},
-  {id:'ce030',semester:'115-2',date:'2026-06-02',dateStr:'6月2日',day:'週二',time:'14:10-15:55',school:'雙十國民中學',type:'博覽會',classNum:'-',people:'-',note:'',teachers:[]},
-  {id:'ce031',semester:'115-2',date:'2026-06-04',dateStr:'6月4日',day:'週四',time:'13:05-15:45',school:'北新國民中學',type:'博覽會',classNum:'-',people:'-',note:'',teachers:[]},
+  {id:'ce001',semester:'115-2',date:'2026-05-18',dateStr:'5月18日',day:'週一',timeStart:'7:35',timeEnd:'8:10',timeNote:'',school:'大業國民中學',type:'入班宣導',classNum:'18班',people:'590',note:'派9人',teachers:[]},
+  {id:'ce002',semester:'115-2',date:'2026-05-18',dateStr:'5月18日',day:'週一',timeStart:'14:00',timeEnd:'16:00',timeNote:'',school:'大業國民中學',type:'博覽會',classNum:'18班',people:'590',note:'',teachers:[]},
+  {id:'ce003',semester:'115-2',date:'2026-05-18',dateStr:'5月18日',day:'週一',timeStart:'',timeEnd:'',timeNote:'下午',school:'大墩國民中學',type:'來校參訪',classNum:'10班',people:'230',note:'',teachers:[]},
+  {id:'ce004',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',timeStart:'13:20',timeEnd:'15:00',timeNote:'',school:'中平國民中學',type:'博覽會',classNum:'-',people:'229',note:'',teachers:[]},
+  {id:'ce005',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',timeStart:'09:10',timeEnd:'11:50',timeNote:'',school:'光明國民中學',type:'博覽會',classNum:'14班',people:'310',note:'',teachers:[]},
+  {id:'ce006',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',timeStart:'11:00',timeEnd:'12:00',timeNote:'',school:'后里國民中學',type:'入班宣導',classNum:'6班',people:'-',note:'需派3位',teachers:[]},
+  {id:'ce007',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',timeStart:'',timeEnd:'',timeNote:'上午',school:'安和國民中學',type:'校園參訪',classNum:'11班',people:'225',note:'6車',teachers:[]},
+  {id:'ce008',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',timeStart:'13:00',timeEnd:'15:30',timeNote:'',school:'新社高級中學',type:'博覽會',classNum:'5班',people:'117',note:'',teachers:[]},
+  {id:'ce009',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',timeStart:'09:00',timeEnd:'11:00',timeNote:'',school:'漢口國民中學',type:'博覽會',classNum:'10班',people:'254',note:'',teachers:[]},
+  {id:'ce010',semester:'115-2',date:'2026-05-19',dateStr:'5月19日',day:'週二',timeStart:'09:20',timeEnd:'10:05',timeNote:'',school:'豐南國民中學',type:'入班宣導',classNum:'16班',people:'385',note:'派8人',teachers:[]},
+  {id:'ce011',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',timeStart:'08:25',timeEnd:'11:00',timeNote:'',school:'光榮國民中學',type:'博覽會',classNum:'-',people:'400',note:'',teachers:[]},
+  {id:'ce012',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',timeStart:'13:30',timeEnd:'16:10',timeNote:'',school:'向上國民中學',type:'博覽會',classNum:'14班',people:'405',note:'',teachers:[]},
+  {id:'ce013',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',timeStart:'09:00',timeEnd:'12:00',timeNote:'',school:'西苑高中',type:'博覽會',classNum:'14班',people:'373',note:'',teachers:[]},
+  {id:'ce014',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',timeStart:'13:10',timeEnd:'14:50',timeNote:'',school:'崇倫國民中學',type:'博覽會',classNum:'10班',people:'256',note:'',teachers:[]},
+  {id:'ce015',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',timeStart:'',timeEnd:'',timeNote:'上午',school:'潭子國民中學',type:'來校參訪',classNum:'-',people:'-',note:'1輛車',teachers:[]},
+  {id:'ce016',semester:'115-2',date:'2026-05-20',dateStr:'5月20日',day:'週三',timeStart:'15:10',timeEnd:'15:55',timeNote:'',school:'豐陽國民中學',type:'設計講座',classNum:'7班',people:'161',note:'佩佩老師',teachers:[]},
+  {id:'ce017',semester:'115-2',date:'2026-05-21',dateStr:'5月21日',day:'週四',timeStart:'13:15',timeEnd:'14:00',timeNote:'',school:'光德國民中學',type:'入班宣導',classNum:'13班',people:'373',note:'派7人',teachers:[]},
+  {id:'ce018',semester:'115-2',date:'2026-05-21',dateStr:'5月21日',day:'週四',timeStart:'',timeEnd:'',timeNote:'下午',school:'神岡國民中學',type:'來校參訪',classNum:'7班',people:'181',note:'',teachers:[]},
+  {id:'ce019',semester:'115-2',date:'2026-05-21',dateStr:'5月21日',day:'週四',timeStart:'15:10',timeEnd:'15:55',timeNote:'',school:'豐陽國民中學',type:'入班宣導',classNum:'7班',people:'161',note:'派4人',teachers:[]},
+  {id:'ce020',semester:'115-2',date:'2026-05-22',dateStr:'5月22日',day:'週五',timeStart:'09:15',timeEnd:'10:55',timeNote:'',school:'立人國民中學',type:'博覽會',classNum:'7班',people:'190',note:'',teachers:[]},
+  {id:'ce021',semester:'115-2',date:'2026-05-25',dateStr:'5月25日',day:'週一',timeStart:'11:00',timeEnd:'12:00',timeNote:'',school:'大雅國民中學',type:'入班宣導',classNum:'13班',people:'390',note:'派5人',teachers:[]},
+  {id:'ce022',semester:'115-2',date:'2026-05-25',dateStr:'5月25日',day:'週一',timeStart:'15:00',timeEnd:'15:50',timeNote:'',school:'烏日國民中學',type:'入班宣導',classNum:'5班',people:'105',note:'派3人',teachers:[]},
+  {id:'ce023',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',timeStart:'14:00',timeEnd:'15:00',timeNote:'',school:'大里高中',type:'博覽會',classNum:'6班',people:'140',note:'',teachers:[]},
+  {id:'ce024',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',timeStart:'14:20',timeEnd:'16:00',timeNote:'',school:'沙鹿國民中學',type:'博覽會',classNum:'18班',people:'502',note:'',teachers:[]},
+  {id:'ce025',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',timeStart:'',timeEnd:'',timeNote:'上午',school:'東山高中',type:'來校參訪',classNum:'6班',people:'190',note:'',teachers:[]},
+  {id:'ce026',semester:'115-2',date:'2026-05-26',dateStr:'5月26日',day:'週二',timeStart:'14:00',timeEnd:'16:00',timeNote:'',school:'新光國民中學',type:'體驗活動',classNum:'-',people:'-',note:'美工科・文麗老師',teachers:['黃文麗']},
+  {id:'ce027',semester:'115-2',date:'2026-05-27',dateStr:'5月27日',day:'週三',timeStart:'13:15',timeEnd:'15:15',timeNote:'',school:'崇德國民中學',type:'博覽會',classNum:'-',people:'434',note:'',teachers:[]},
+  {id:'ce028',semester:'115-2',date:'2026-05-27',dateStr:'5月27日',day:'週三',timeStart:'10:10',timeEnd:'10:55',timeNote:'',school:'豐原國民中學',type:'入班宣導',classNum:'12班',people:'290',note:'派6人',teachers:[]},
+  {id:'ce029',semester:'115-2',date:'2026-05-29',dateStr:'5月29日',day:'週五',timeStart:'',timeEnd:'',timeNote:'上午',school:'北新國民中學',type:'來校參訪',classNum:'13班',people:'567',note:'',teachers:[]},
+  {id:'ce030',semester:'115-2',date:'2026-06-02',dateStr:'6月2日',day:'週二',timeStart:'14:10',timeEnd:'15:55',timeNote:'',school:'雙十國民中學',type:'博覽會',classNum:'-',people:'-',note:'',teachers:[]},
+  {id:'ce031',semester:'115-2',date:'2026-06-04',dateStr:'6月4日',day:'週四',timeStart:'13:05',timeEnd:'15:45',timeNote:'',school:'北新國民中學',type:'博覽會',classNum:'-',people:'-',note:'',teachers:[]},
 ];
 
 
@@ -752,6 +787,50 @@ function sortCal(){
   });
 }
 
+// 日期篩選狀態
+let dateFrom='', dateTo='', calKw='', activeQuick='';
+
+function applyDateFilter(){
+  dateFrom=document.getElementById('cal-date-from').value;
+  dateTo=document.getElementById('cal-date-to').value;
+  calKw=(document.getElementById('cal-kw').value||'').trim().toLowerCase();
+  activeQuick='';
+  ['dq-today','dq-week','dq-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  renderCal();
+}
+
+function setDateQuick(type){
+  const now=new Date();
+  const toISO=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  let from='',to='';
+  if(type==='today'){from=to=toISO(now);}
+  else if(type==='week'){
+    const dow=now.getDay()||7;
+    const mon=new Date(now);mon.setDate(now.getDate()-dow+1);
+    const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+    from=toISO(mon);to=toISO(sun);
+  } else if(type==='month'){
+    from=`${now.getFullYear()}-${pad(now.getMonth()+1)}-01`;
+    const last=new Date(now.getFullYear(),now.getMonth()+1,0);
+    to=toISO(last);
+  }
+  dateFrom=from;dateTo=to;
+  document.getElementById('cal-date-from').value=from;
+  document.getElementById('cal-date-to').value=to;
+  activeQuick=type;
+  ['dq-today','dq-week','dq-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',id==='dq-'+type);});
+  renderCal();
+}
+
+function clearDateFilter(){
+  dateFrom='';dateTo='';calKw='';activeQuick='';
+  document.getElementById('cal-date-from').value='';
+  document.getElementById('cal-date-to').value='';
+  document.getElementById('cal-kw').value='';
+  ['dq-today','dq-week','dq-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  renderCal();
+}
+
 function filterSem(sem){
   activeSem=sem;
   document.getElementById('sem-all').className='sb '+(sem==='all'?'active':'');
@@ -773,11 +852,41 @@ function renderSemBtns(){
 
 function renderCal(){
   const tbody=document.getElementById('cal-body');
-  const filtered=activeSem==='all'?calEvents:calEvents.filter(e=>e.semester===activeSem);
+  const infoEl=document.getElementById('filter-info');
+
+  // 1. 學期篩選
+  let filtered=activeSem==='all'?calEvents:calEvents.filter(e=>e.semester===activeSem);
+
+  // 2. 日期區間篩選
+  if(dateFrom) filtered=filtered.filter(e=>!e.date||e.date>=dateFrom);
+  if(dateTo)   filtered=filtered.filter(e=>!e.date||e.date<=dateTo);
+
+  // 3. 關鍵字搜尋（學校、活動類型、備註、指派老師）
+  if(calKw) filtered=filtered.filter(e=>
+    (e.school||'').toLowerCase().includes(calKw)||
+    (e.type||'').toLowerCase().includes(calKw)||
+    (e.note||'').toLowerCase().includes(calKw)||
+    (e.teachers||[]).some(n=>n.toLowerCase().includes(calKw))
+  );
+
+  // 顯示篩選提示
+  const hasFilter=dateFrom||dateTo||calKw;
+  if(hasFilter&&infoEl){
+    const total=calEvents.length;
+    let msg=`共 ${total} 筆，篩選後顯示 ${filtered.length} 筆`;
+    if(dateFrom||dateTo) msg+=`　日期：${dateFrom||'…'}～${dateTo||'…'}`;
+    if(calKw) msg+=`　關鍵字：「${calKw}」`;
+    infoEl.textContent=msg;
+    infoEl.style.display='block';
+  } else if(infoEl){
+    infoEl.style.display='none';
+  }
+
   if(!filtered.length){
-    tbody.innerHTML='<tr><td colspan="13" class="empty">尚無活動</td></tr>';
+    tbody.innerHTML=`<tr><td colspan="13" class="empty">${hasFilter?'找不到符合條件的活動':'尚無活動'}</td></tr>`;
     return;
   }
+
   const semOrd={};semesters.forEach((s,i)=>semOrd[s]=i);
   const grp={};
   filtered.forEach(ev=>{const k=ev.semester||'未分類';if(!grp[k])grp[k]=[];grp[k].push(ev);});
@@ -787,7 +896,7 @@ function renderCal(){
   semKeys.forEach((sem,si)=>{
     const col=colors[si%colors.length];
     const ids=grp[sem].map(e=>e.id);
-    html+=`<tr class="sem-row"><td style="background:${col}"><input type="checkbox" class="sem-grp-chk" onchange="toggleSemGrp(this,${JSON.stringify(ids)})" style="cursor:pointer;filter:invert(1)"></td><td colspan="12">📅 ${sem}</td></tr>`;
+    html+=`<tr class="sem-row"><td style="background:${col}"><input type="checkbox" class="sem-grp-chk" onchange="toggleSemGrp(this,${JSON.stringify(ids)})" style="cursor:pointer;filter:invert(1)"></td><td colspan="12">📅 ${sem}（${grp[sem].length} 筆）</td></tr>`;
     grp[sem].forEach(ev=>{
       const isSel=selIds.has(ev.id);
       const hasReport=!!ev.report;
@@ -1333,6 +1442,27 @@ function applyToEvent(){
 // ══════════════════════════════════════
 // TEACHERS
 // ══════════════════════════════════════
+let selTIds=new Set();
+
+let tBatchMode=false; // 老師批次模式
+
+function enterTBatchMode(){
+  tBatchMode=true;
+  selTIds.clear();
+  document.getElementById('t-default-ops').style.display='none';
+  document.getElementById('t-batch-ops').style.display='flex';
+  document.getElementById('t-batch-count').textContent='';
+  const ca=document.getElementById('t-check-all');if(ca){ca.checked=false;ca.indeterminate=false;}
+  renderTL();
+}
+function exitTBatchMode(){
+  tBatchMode=false;
+  selTIds.clear();
+  document.getElementById('t-batch-ops').style.display='none';
+  document.getElementById('t-default-ops').style.display='flex';
+  renderTL();
+}
+
 function renderTL(){
   document.getElementById('tc').textContent=T.length;
   document.getElementById('tc2').textContent=T.length;
@@ -1340,14 +1470,95 @@ function renderTL(){
   const list=kw?T.filter(t=>t.name.toLowerCase().includes(kw)||t.subject.toLowerCase().includes(kw)):T;
   const el=document.getElementById('t-list');
   if(!list.length){el.innerHTML='<div class="empty">找不到老師</div>';return;}
-  el.innerHTML=list.map(t=>`<div class="ti">
-    <div><div style="font-size:13px;font-weight:600">${t.name} 老師</div><div style="font-size:11px;color:#888;margin-top:2px">${t.subject}・${Object.keys(t.schedule).length} 節有課</div></div>
-    <div style="display:flex;gap:5px">
-      <button class="bsm" onclick="viewT('${t.id}')">查看課表</button>
-      <button class="bsm" onclick="openTEdit('${t.id}')">編輯</button>
-      <button class="bdel" onclick="delT('${t.id}')">刪除</button>
-    </div>
-  </div>`).join('');
+  el.innerHTML=list.map(t=>{
+    const isSel=selTIds.has(t.id);
+    return `<div class="ti" style="background:${isSel&&tBatchMode?'#eef5ff':'#fff'}">
+      <div style="display:flex;align-items:center;gap:10px">
+        ${tBatchMode?`<input type="checkbox" class="t-row-chk" data-id="${t.id}" ${isSel?'checked':''} onchange="toggleTRow('${t.id}',this.checked)" style="width:15px;height:15px;cursor:pointer;flex-shrink:0">`:''}
+        <div>
+          <div style="font-size:13px;font-weight:600">${t.name} 老師</div>
+          <div style="font-size:11px;color:#888;margin-top:2px">${t.subject}・${Object.keys(t.schedule).length} 節有課</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:5px">
+        <button class="bsm" onclick="viewT('${t.id}')">查看課表</button>
+        <button class="bsm" onclick="openTEdit('${t.id}')">編輯</button>
+        <button class="bdel" onclick="delT('${t.id}')">刪除</button>
+      </div>
+    </div>`;
+  }).join('');
+  if(tBatchMode) updateTBatchBar();
+}
+
+function toggleTRow(id,checked){
+  if(checked)selTIds.add(id);else selTIds.delete(id);
+  updateTBatchBar();
+  syncTCheckAll();
+}
+function toggleAllT(checked){
+  document.querySelectorAll('.t-row-chk').forEach(b=>{
+    b.checked=checked;
+    if(checked)selTIds.add(b.dataset.id);else selTIds.delete(b.dataset.id);
+  });
+  document.getElementById('t-check-all').indeterminate=false;
+  updateTBatchBar();
+}
+function syncTCheckAll(){
+  const allB=document.querySelectorAll('.t-row-chk');
+  const ca=document.getElementById('t-check-all');
+  if(!ca||!allB.length)return;
+  ca.checked=[...allB].every(b=>b.checked);
+  ca.indeterminate=[...allB].some(b=>b.checked)&&![...allB].every(b=>b.checked);
+}
+function clearSelT(){
+  selTIds.clear();
+  document.querySelectorAll('.t-row-chk').forEach(b=>b.checked=false);
+  const ca=document.getElementById('t-check-all');if(ca){ca.checked=false;ca.indeterminate=false;}
+  updateTBatchBar();
+  renderTL();
+}
+function updateTBatchBar(){
+  const n=selTIds.size;
+  const countEl=document.getElementById('t-batch-count');
+  if(countEl) countEl.textContent=n>0?`已選 ${n} 位`:'';
+}
+function batchDelT(){
+  if(!selTIds.size){alert('請先勾選要刪除的老師');return;}
+  if(!confirm(`確定刪除選取的 ${selTIds.size} 位老師？此操作無法還原`))return;
+  T=T.filter(t=>!selTIds.has(t.id));
+  selTIds.clear();
+  renderTL();saveData();
+  const ca=document.getElementById('t-check-all');if(ca){ca.checked=false;ca.indeterminate=false;}
+}
+function clearSelT(){
+  selTIds.clear();
+  document.querySelectorAll('.t-row-chk').forEach(b=>b.checked=false);
+  const ca=document.getElementById('t-check-all');if(ca){ca.checked=false;ca.indeterminate=false;}
+  updateTBatchBar();
+  renderTL();
+}
+function dlSelTeachers(){
+  if(!selTIds.size){alert('請先勾選要下載的老師');return;}
+  const sel=T.filter(t=>selTIds.has(t.id));
+  const BOM='\uFEFF';
+  const headers=['老師姓名','科目','星期(1=週一,6=週六)','節次代號','課程名稱','班級'];
+  const rows=[headers];
+  sel.forEach(t=>{
+    const keys=Object.keys(t.schedule);
+    if(!keys.length){rows.push([t.name,t.subject,'','','','']);return;}
+    keys.forEach(key=>{
+      const[dayStr,perId]=key.split('_');
+      const val=t.schedule[key]||'';
+      const[course,cls]=val.split('\n');
+      rows.push([t.name,t.subject,dayStr,perId,course||'',cls||'']);
+    });
+  });
+  const csv=BOM+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const names=sel.map(t=>t.name).join('、');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`老師課表_${names.length>10?sel.length+'位老師':names}.csv`;
+  a.click();
 }
 function viewT(id){
   const t=T.find(x=>x.id===id);if(!t)return;
